@@ -1,11 +1,9 @@
-/**
- * Learn more about using TypeScript with React Navigation:
- * https://reactnavigation.org/docs/typescript/
- */
-
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs"
 import { CompositeScreenProps, NavigatorScreenParams } from "@react-navigation/native"
 import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import { ActionType } from "typesafe-actions"
+
+import * as homeActions from "./components/homeActions"
 
 declare global {
   namespace ReactNavigation {
@@ -33,3 +31,10 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> = Composit
   BottomTabScreenProps<RootTabParamList, Screen>,
   NativeStackScreenProps<RootStackParamList>
 >
+
+export interface IHomeState {
+  user: string,
+  error: string | null
+}
+
+export type HomeActions = ActionType<typeof homeActions>
