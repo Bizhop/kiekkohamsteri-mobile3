@@ -1,4 +1,4 @@
-import { StyleSheet, TouchableOpacity } from "react-native"
+import { StyleSheet } from "react-native"
 
 import { MonoText } from "./StyledText"
 import { Text, View } from "./Themed"
@@ -31,7 +31,6 @@ export default function EditScreenInfo({ path }: { path: string }) {
           Change any of the text, save the file, and your app will automatically update.
         </Text>
       </View>
-
     </View>
   )
 }
