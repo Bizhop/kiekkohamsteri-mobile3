@@ -32,13 +32,20 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> = Composit
   NativeStackScreenProps<RootStackParamList>
 >
 
-interface User {
-  token: string
-}
-
 export interface IHomeState {
-  user: User | null
+  user: any
   error: string | null
 }
 
 export type HomeActions = ActionType<typeof homeActions>
+
+interface Request {
+  url: string,
+  headers?: any,
+  method?: string,
+  data?: any
+}
+
+export interface Payload {
+  request: Request
+}

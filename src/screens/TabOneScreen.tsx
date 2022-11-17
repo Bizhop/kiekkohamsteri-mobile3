@@ -4,7 +4,6 @@ import { StyleSheet, Button } from "react-native"
 import { connect } from "react-redux"
 import { Dispatch } from "redux"
 
-import EditScreenInfo from "../components/EditScreenInfo"
 import { Text, View } from "../components/Themed"
 import { IRootState } from "../store"
 import { HomeActions } from "../types"
@@ -13,12 +12,14 @@ import * as homeActions from "../components/homeActions"
 const mapStateToProps = ({ home }: IRootState) => {
   return {
     user: home.user,
+    error: home.error
   }
 }
 
 const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
   return {
     login: (token: string) => dispatch(homeActions.login(token)),
+    logout: () => dispatch(homeActions.logout())
   }
 }
 
@@ -37,15 +38,18 @@ const TabOneScreen = (props: ReduxType) => {
     }
   }, [response])
 
-  const { user } = props
+  const { user, error } = props
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Tab One</Text>
-      {user && <Text>Token: {user.token}</Text>}
+      <Text style={styles.title}>Kiekkohamsteri</Text>
+      {user && <Text>User: {user.username}</Text>}
+      {error && <Text>Error: {error}</Text>}
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      <Button disabled={!request} title="Login" onPress={() => promptAsync()} />
-      <EditScreenInfo path="/screens/TabOneScreen.tsx" />
+      {user
+        ? <Button title="Logout" onPress={props.logout} />
+        : <Button disabled={!request} title="Login" onPress={() => promptAsync()} />
+      }
     </View>
   )
 }
