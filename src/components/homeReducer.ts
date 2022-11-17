@@ -1,6 +1,7 @@
-import { HomeActions, IHomeState } from "../types"
 import { dissoc } from "ramda"
-// import * as SecureStore from 'expo-secure-store'
+import * as SecureStore from 'expo-secure-store'
+
+import { HomeActions, IHomeState } from "../types"
 
 export const LOGIN = "home/LOGIN"
 export const LOGIN_SUCCESS = "home/LOGIN_SUCCESS"
@@ -25,20 +26,21 @@ export default function homeReducer(
         error: null
       }
     case LOGIN_SUCCESS:
-      // SecureStore.setItemAsync("token", action.payload.data.jwt)
+      SecureStore.setItemAsync("token", action.payload.data.jwt)
       return {
         ...state,
         user: dissoc("jwt", action.payload.data),
         error: null
       }
     case LOGIN_FAIL:
-      // SecureStore.deleteItemAsync("token")
+      SecureStore.deleteItemAsync("token")
       return {
         ...state,
         user: null,
         error: "Login failed: " + JSON.stringify(action.payload)
       }
     case LOGOUT:
+      SecureStore.deleteItemAsync("token")
       return initialState
     default:
       return state

@@ -3,10 +3,12 @@ import axios from "axios"
 import axiosMiddleware from "redux-axios-middleware"
 
 import homeReducer from "./components/homeReducer"
-import { IHomeState } from "./types"
+import { IDiscsState, IHomeState } from "./types"
+import discsReducer from "./components/discReducer"
 
 export interface IRootState {
-  home: IHomeState
+  home: IHomeState,
+  discs: IDiscsState
 }
 
 const client = axios.create({
@@ -17,6 +19,7 @@ const client = axios.create({
 const store = createStore<IRootState, any, any, any>(
   combineReducers({
     home: homeReducer,
+    discs: discsReducer
   }),
   applyMiddleware(axiosMiddleware(client))
 )

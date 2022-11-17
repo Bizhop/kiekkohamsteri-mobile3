@@ -4,6 +4,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack"
 import { ActionType } from "typesafe-actions"
 
 import * as homeActions from "./components/homeActions"
+import * as discActions from "./components/discActions"
 
 declare global {
   namespace ReactNavigation {
@@ -37,7 +38,13 @@ export interface IHomeState {
   error: string | null
 }
 
+export interface IDiscsState {
+  discs: any,
+  error: string | null
+}
+
 export type HomeActions = ActionType<typeof homeActions>
+export type DiscActions = ActionType<typeof discActions>
 
 interface Request {
   url: string,
