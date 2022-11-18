@@ -9,22 +9,29 @@ import { Text, View } from "../components/Themed"
 import { IRootState } from "../store"
 import { DiscActions, HomeActions } from "../types"
 import * as homeActions from "../components/homeActions"
-import { get } from "../components/discActions"
+import { get, prepareGet } from "../components/discActions"
 
 const mapStateToProps = ({ home, discs }: IRootState) => {
   return {
     user: home.user,
     error: home.error,
-    discs: discs.discs
+    discs: discs.discs,
+    loadingDiscs: discs.loading
   }
+}
+
+const autoLogin = (dispatch: Dispatch) => {
+  SecureStore.getItemAsync("token").then(token => token && dispatch(homeActions.login(token)))
 }
 
 const mapDispatcherToProps = (dispatch: Dispatch<HomeActions> & Dispatch<DiscActions>) => {
   return {
+    autoLogin: autoLogin(dispatch),
     login: (token: string) => dispatch(homeActions.login(token)),
     logout: () => dispatch(homeActions.logout()),
     getDiscs: () => {
-      SecureStore.getItemAsync("token").then(token => token ? dispatch(get(token)) : null)
+      dispatch(prepareGet())
+      SecureStore.getItemAsync("token").then(token => token && dispatch(get(token)))
     }
   }
 }
@@ -44,7 +51,7 @@ const TabOneScreen = (props: ReduxType) => {
     }
   }, [response])
 
-  const { user, error, discs } = props
+  const { user, error, discs, loadingDiscs } = props
 
   return (
     <View style={styles.container}>
@@ -52,7 +59,7 @@ const TabOneScreen = (props: ReduxType) => {
       {user && <Text>User: {user.username}</Text>}
       {error && <Text>Error: {error}</Text>}
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      {user && discs.length == 0 && <Button title="Get discs" onPress={props.getDiscs} /> }
+      {user && <Button disabled={loadingDiscs} title="Get discs" onPress={props.getDiscs} /> }
       {user && discs.length > 0 && <Text>Discs: {discs.length}</Text>}
       {user
         ? <Button title="Logout" onPress={props.logout} />

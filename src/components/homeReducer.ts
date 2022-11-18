@@ -17,7 +17,7 @@ export default function homeReducer(
   state: IHomeState = initialState,
   action: HomeActions,
 ): IHomeState {
-  console.log(action)
+  action.type.startsWith("home") && console.log(action)
   switch (action.type) {
     case LOGIN:
       return {
@@ -37,7 +37,7 @@ export default function homeReducer(
       return {
         ...state,
         user: null,
-        error: "Login failed: " + JSON.stringify(action.payload)
+        error: "Login failed: " + action.error?.message
       }
     case LOGOUT:
       SecureStore.deleteItemAsync("token")

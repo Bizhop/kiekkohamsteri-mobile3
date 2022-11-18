@@ -40,6 +40,7 @@ export interface IHomeState {
 
 export interface IDiscsState {
   discs: any,
+  loading: boolean
   error: string | null
 }
 
@@ -55,4 +56,11 @@ interface Request {
 
 export interface Payload {
   request: Request
+}
+
+export interface AxiosResponse {
+  type: string,
+  payload?: any,
+  meta?: any,
+  error?: any
 }
