@@ -1,5 +1,3 @@
-import { pathOr } from "ramda"
-
 import { DiscActions, IDiscsState } from "../types"
 
 export const PREPARE_GET = "discs/PREPARE_GET"
@@ -34,7 +32,7 @@ export default function discsReducer(
       return {
         ...state,
         loading: false,
-        discs: pathOr([], ["payload", "data", "content"], action),
+        discs: action.payload?.data.content || [],
         error: null
       }
     case GET_FAIL:

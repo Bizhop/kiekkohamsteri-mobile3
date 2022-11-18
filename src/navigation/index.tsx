@@ -12,7 +12,7 @@ import { ColorSchemeName, Pressable } from "react-native"
 
 import Colors from "../constants/Colors"
 import useColorScheme from "../hooks/useColorScheme"
-import ModalScreen from "../screens/ModalScreen"
+import ModalScreen from "../screens/UserModalScreen"
 import TabOneScreen from "../screens/TabOneScreen"
 import TabTwoScreen from "../screens/TabTwoScreen"
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from "../types"
@@ -41,7 +41,7 @@ function RootNavigator() {
       <Stack.Screen name="Root" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Screen name="NotFound" component={BottomTabNavigator} options={{ headerShown: false }} />
       <Stack.Group screenOptions={{ presentation: "modal" }}>
-        <Stack.Screen name="Modal" component={ModalScreen} />
+        <Stack.Screen name="User" component={ModalScreen} />
       </Stack.Group>
     </Stack.Navigator>
   )
@@ -67,17 +67,17 @@ function BottomTabNavigator() {
         name="TabOne"
         component={TabOneScreen}
         options={({ navigation }: RootTabScreenProps<"TabOne">) => ({
-          title: "Tab One",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: "Home",
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
           headerRight: () => (
             <Pressable
-              onPress={() => navigation.navigate("Modal")}
+              onPress={() => navigation.navigate("User")}
               style={({ pressed }) => ({
                 opacity: pressed ? 0.5 : 1,
               })}
             >
               <FontAwesome
-                name="info-circle"
+                name="gear"
                 size={25}
                 color={Colors[colorScheme].text}
                 style={{ marginRight: 15 }}
@@ -90,8 +90,8 @@ function BottomTabNavigator() {
         name="TabTwo"
         component={TabTwoScreen}
         options={{
-          title: "Tab Two",
-          tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
+          title: "Discs",
+          tabBarIcon: ({ color }) => <TabBarIcon name="circle-thin" color={color} />,
         }}
       />
     </BottomTab.Navigator>

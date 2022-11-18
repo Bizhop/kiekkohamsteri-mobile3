@@ -7,32 +7,22 @@ import * as SecureStore from 'expo-secure-store'
 
 import { Text, View } from "../components/Themed"
 import { IRootState } from "../store"
-import { DiscActions, HomeActions } from "../types"
+import { HomeActions, IHomeState } from "../types"
 import * as homeActions from "../components/homeActions"
-import { get, prepareGet } from "../components/discActions"
 
-const mapStateToProps = ({ home, discs }: IRootState) => {
-  return {
-    user: home.user,
-    error: home.error,
-    discs: discs.discs,
-    loadingDiscs: discs.loading
-  }
+const mapStateToProps = ({ home }: IRootState): IHomeState => {
+  return home
 }
 
-const autoLogin = (dispatch: Dispatch) => {
+const autoLogin = (dispatch: Dispatch<HomeActions>) => {
   SecureStore.getItemAsync("token").then(token => token && dispatch(homeActions.login(token)))
 }
 
-const mapDispatcherToProps = (dispatch: Dispatch<HomeActions> & Dispatch<DiscActions>) => {
+const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
   return {
     autoLogin: autoLogin(dispatch),
     login: (token: string) => dispatch(homeActions.login(token)),
-    logout: () => dispatch(homeActions.logout()),
-    getDiscs: () => {
-      dispatch(prepareGet())
-      SecureStore.getItemAsync("token").then(token => token && dispatch(get(token)))
-    }
+    logout: () => dispatch(homeActions.logout())
   }
 }
 
@@ -44,14 +34,14 @@ const TabOneScreen = (props: ReduxType) => {
     androidClientId: "368284396209-9mdl024mu9bj3mpadovsk4le6uq8g5c8.apps.googleusercontent.com",
   })
 
+  const { user, error, login, logout } = props
+
   React.useEffect(() => {
     if (response?.type === "success") {
       const { id_token } = response?.params
-      props.login(id_token)
+      login(id_token)
     }
   }, [response])
-
-  const { user, error, discs, loadingDiscs } = props
 
   return (
     <View style={styles.container}>
@@ -59,10 +49,8 @@ const TabOneScreen = (props: ReduxType) => {
       {user && <Text>User: {user.username}</Text>}
       {error && <Text>Error: {error}</Text>}
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      {user && <Button disabled={loadingDiscs} title="Get discs" onPress={props.getDiscs} /> }
-      {user && discs.length > 0 && <Text>Discs: {discs.length}</Text>}
       {user
-        ? <Button title="Logout" onPress={props.logout} />
+        ? <Button title="Logout" onPress={logout} />
         : <Button disabled={!request} title="Login" onPress={() => promptAsync()} />
       }
     </View>

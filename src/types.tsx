@@ -14,7 +14,7 @@ declare global {
 
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined
-  Modal: undefined
+  User: undefined
   NotFound: undefined
 }
 
@@ -34,12 +34,13 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> = Composit
 >
 
 export interface IHomeState {
-  user: any
+  user: IUser | null
+  userUpdating: boolean,
   error: string | null
 }
 
 export interface IDiscsState {
-  discs: any,
+  discs: Array<IDisc>,
   loading: boolean
   error: string | null
 }
@@ -47,20 +48,94 @@ export interface IDiscsState {
 export type HomeActions = ActionType<typeof homeActions>
 export type DiscActions = ActionType<typeof discActions>
 
-interface Request {
+interface IRequest {
   url: string,
   headers?: any,
   method?: string,
   data?: any
 }
 
-export interface Payload {
-  request: Request
+export interface IRequestPayload {
+  request: IRequest
 }
 
-export interface AxiosResponse {
+export interface IResponsePayload<T> {
+  data: T
+}
+
+export interface IResponsePagedPayload<T> {
+  data: {
+    content: Array<T>
+  }
+}
+
+export interface IAxiosResponse<T> {
   type: string,
-  payload?: any,
+  payload?: IResponsePayload<T>
   meta?: any,
   error?: any
+}
+
+export interface IAxiosPagedResponse<T> {
+  type: string,
+  payload?: IResponsePagedPayload<T>
+  meta?: any,
+  error?: any
+}
+
+interface IRole {
+  id: number,
+  name: string,
+  groupId: number
+}
+
+interface IGroup {
+  id: number,
+  name: string
+}
+
+export interface IUser {
+  id: number,
+  username: string,
+  email?: string,
+  firstName: string,
+  lastName: string,
+  pdgaNumber: number,
+  jwt?: string,
+  roles?: Array<IRole>,
+  groups?: Array<IGroup>
+}
+
+export interface IDisc {
+  id: number,
+  omistaja: string,
+  valmistaja: string,
+  valmId: number,
+  mold: string,
+  moldId: number,
+  muovi: string,
+  muoviId: number,
+  vari: string,
+  variId: number,
+  nopeus: number,
+  liito: number,
+  vakaus: number,
+  feidi: number,
+  kuva: string,
+  paino: number,
+  kunto: number,
+  hohto: boolean,
+  spessu: boolean,
+  dyed: boolean,
+  swirly: boolean,
+  tussit: number,
+  myynnissa: boolean,
+  hinta: number,
+  muuta: string,
+  loytokiekko: boolean,
+  itb: boolean,
+  publicDisc: boolean,
+  lost: boolean,
+  createdAt: string,
+  updatedAt: string
 }
