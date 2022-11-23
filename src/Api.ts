@@ -5,9 +5,9 @@ export const loginPayload = (token: string): IRequestPayload => ({
     method: "get",
     url: "/v2/login",
     headers: {
-      Authorization: token
-    }
-  }
+      Authorization: token,
+    },
+  },
 })
 
 export const getPayload = (url: string, token: string): IRequestPayload => ({
@@ -15,9 +15,9 @@ export const getPayload = (url: string, token: string): IRequestPayload => ({
     method: "get",
     url,
     headers: {
-      Authorization: token
-    }
-  }
+      Authorization: token,
+    },
+  },
 })
 
 export const patchPayload = (url: string, data: any, token: string): IRequestPayload => ({
@@ -26,7 +26,18 @@ export const patchPayload = (url: string, data: any, token: string): IRequestPay
     url,
     data,
     headers: {
-      Authorization: token
-    }
-  }
+      Authorization: token,
+    },
+  },
+})
+
+export const putPayload = (url: string, data: any, token: string): IRequestPayload => ({
+  request: {
+    method: "put",
+    url,
+    data,
+    headers: {
+      Authorization: token,
+    },
+  },
 })

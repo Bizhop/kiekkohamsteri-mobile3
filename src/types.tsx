@@ -5,6 +5,8 @@ import { ActionType } from "typesafe-actions"
 
 import * as homeActions from "./components/homeActions"
 import * as discActions from "./components/discActions"
+import * as dropdownActions from "./components/dropdownActions"
+import { ReactText } from "react"
 
 declare global {
   namespace ReactNavigation {
@@ -15,6 +17,7 @@ declare global {
 export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined
   User: undefined
+  Disc: undefined
   NotFound: undefined
 }
 
@@ -35,23 +38,30 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> = Composit
 
 export interface IHomeState {
   user: IUser | null
-  userUpdating: boolean,
+  userUpdating: boolean
   error: string | null
 }
 
 export interface IDiscsState {
-  discs: Array<IDisc>,
+  discs: Array<IDisc>
   loading: boolean
+  discInEdit: IDisc | null
   error: string | null
+}
+
+export interface IDropdownsState {
+  dropdowns: IDropdowns
+  selectedManufacturerId: number | null
 }
 
 export type HomeActions = ActionType<typeof homeActions>
 export type DiscActions = ActionType<typeof discActions>
+export type DropdownActions = ActionType<typeof dropdownActions>
 
 interface IRequest {
-  url: string,
-  headers?: any,
-  method?: string,
+  url: string
+  headers?: any
+  method?: string
   data?: any
 }
 
@@ -69,73 +79,78 @@ export interface IResponsePagedPayload<T> {
   }
 }
 
-export interface IAxiosResponse<T> {
-  type: string,
-  payload?: IResponsePayload<T>
-  meta?: any,
-  error?: any
-}
-
-export interface IAxiosPagedResponse<T> {
-  type: string,
-  payload?: IResponsePagedPayload<T>
-  meta?: any,
-  error?: any
-}
-
 interface IRole {
-  id: number,
-  name: string,
+  id: number
+  name: string
   groupId: number
 }
 
 interface IGroup {
-  id: number,
+  id: number
   name: string
 }
 
 export interface IUser {
-  id: number,
-  username: string,
-  email?: string,
-  firstName: string,
-  lastName: string,
-  pdgaNumber: number,
-  jwt?: string,
-  roles?: Array<IRole>,
+  id: number
+  username: string
+  email?: string
+  firstName: string
+  lastName: string
+  pdgaNumber: number
+  jwt?: string
+  roles?: Array<IRole>
   groups?: Array<IGroup>
 }
 
 export interface IDisc {
-  id: number,
-  omistaja: string,
-  valmistaja: string,
-  valmId: number,
-  mold: string,
-  moldId: number,
-  muovi: string,
-  muoviId: number,
-  vari: string,
-  variId: number,
-  nopeus: number,
-  liito: number,
-  vakaus: number,
-  feidi: number,
-  kuva: string,
-  paino: number,
-  kunto: number,
-  hohto: boolean,
-  spessu: boolean,
-  dyed: boolean,
-  swirly: boolean,
-  tussit: number,
-  myynnissa: boolean,
-  hinta: number,
-  muuta: string,
-  loytokiekko: boolean,
-  itb: boolean,
-  publicDisc: boolean,
-  lost: boolean,
-  createdAt: string,
+  id: number
+  omistaja: string
+  valmistaja: string
+  valmId: number
+  mold: string
+  moldId: number
+  muovi: string
+  muoviId: number
+  vari: string
+  variId: number
+  nopeus: number
+  liito: number
+  vakaus: number
+  feidi: number
+  kuva: string
+  paino: number
+  kunto: number
+  hohto: boolean
+  spessu: boolean
+  dyed: boolean
+  swirly: boolean
+  tussit: number
+  myynnissa: boolean
+  hinta: number
+  muuta: string
+  loytokiekko: boolean
+  itb: boolean
+  publicDisc: boolean
+  lost: boolean
+  createdAt: string
   updatedAt: string
+}
+
+interface DefaultDropdown {
+  id: number
+  nimi: string
+}
+
+export interface IDropdowns {
+  molds: Array<{ id: number; kiekko: string }>
+  valms: Array<{ id: number; valmistaja: string }>
+  muovit: Array<{ id: number; muovi: string }>
+  varit: Array<{ id: number; vari: string }>
+  kunto: Array<DefaultDropdown>
+  tussit: Array<DefaultDropdown>
+}
+
+export interface Item {
+  label: string
+  value: number
 }

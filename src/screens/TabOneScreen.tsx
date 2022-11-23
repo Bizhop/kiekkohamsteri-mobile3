@@ -3,7 +3,7 @@ import * as Google from "expo-auth-session/providers/google"
 import { StyleSheet, Button } from "react-native"
 import { connect } from "react-redux"
 import { Dispatch } from "redux"
-import * as SecureStore from 'expo-secure-store'
+import * as SecureStore from "expo-secure-store"
 
 import { Text, View } from "../components/Themed"
 import { IRootState } from "../store"
@@ -15,14 +15,14 @@ const mapStateToProps = ({ home }: IRootState): IHomeState => {
 }
 
 const autoLogin = (dispatch: Dispatch<HomeActions>) => {
-  SecureStore.getItemAsync("token").then(token => token && dispatch(homeActions.login(token)))
+  SecureStore.getItemAsync("token").then((token) => token && dispatch(homeActions.login(token)))
 }
 
 const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
   return {
     autoLogin: autoLogin(dispatch),
     login: (token: string) => dispatch(homeActions.login(token)),
-    logout: () => dispatch(homeActions.logout())
+    logout: () => dispatch(homeActions.logout()),
   }
 }
 
@@ -49,10 +49,11 @@ const TabOneScreen = (props: ReduxType) => {
       {user && <Text>User: {user.username}</Text>}
       {error && <Text>Error: {error}</Text>}
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
-      {user
-        ? <Button title="Logout" onPress={logout} />
-        : <Button disabled={!request} title="Login" onPress={() => promptAsync()} />
-      }
+      {user ? (
+        <Button title="Logout" onPress={logout} />
+      ) : (
+        <Button disabled={!request} title="Login" onPress={() => promptAsync()} />
+      )}
     </View>
   )
 }

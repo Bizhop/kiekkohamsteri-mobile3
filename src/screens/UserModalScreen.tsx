@@ -1,10 +1,10 @@
 import * as React from "react"
 import { StatusBar } from "expo-status-bar"
-import { Platform, StyleSheet, Button } from "react-native"
+import { Platform, StyleSheet } from "react-native"
 import { connect } from "react-redux"
 import { Dispatch } from "redux"
 import { Form, FormItem } from "react-native-form-component"
-import * as SecureStore from 'expo-secure-store'
+import * as SecureStore from "expo-secure-store"
 
 import { Text, View } from "../components/Themed"
 import { IRootState } from "../store"
@@ -17,12 +17,14 @@ const mapStateToProps = ({ home }: IRootState): IHomeState => {
 
 const updateUser = (user: IUser, dispatch: Dispatch<HomeActions>) => {
   dispatch(homeActions.prepareUserUpdate())
-  SecureStore.getItemAsync("token").then(token => token && dispatch(homeActions.updateUser(user, token)))
+  SecureStore.getItemAsync("token").then(
+    (token) => token && dispatch(homeActions.updateUser(user, token)),
+  )
 }
 
 const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
   return {
-    updateUser: (user: IUser) => updateUser(user, dispatch)
+    updateUser: (user: IUser) => updateUser(user, dispatch),
   }
 }
 
@@ -42,33 +44,28 @@ const UserModalScreen = (props: ReduxType) => {
   )
 }
 
-const UserEditForm = (props: { initialValues: IUser, update: (user: IUser) => void }) => {
-  const [username, setUserName] = React.useState(props.initialValues.username)
-  const [firstName, setFirstName] = React.useState(props.initialValues.firstName)
-  const [lastName, setLastName] = React.useState(props.initialValues.lastName)
-  const [pdgaNumber, setPdgaNumber] = React.useState(props.initialValues.pdgaNumber)
+const UserEditForm = (props: { initialValues: IUser; update: (user: IUser) => void }) => {
+  const { initialValues, update } = props
+
+  const [username, setUserName] = React.useState(initialValues.username)
+  const [firstName, setFirstName] = React.useState(initialValues.firstName)
+  const [lastName, setLastName] = React.useState(initialValues.lastName)
+  const [pdgaNumber, setPdgaNumber] = React.useState(initialValues.pdgaNumber)
 
   return (
-    <Form onButtonPress={() => props.update({id: props.initialValues.id, username, firstName, lastName, pdgaNumber})} buttonText="Update">
-      <FormItem
-        value={username}
-        label="Username"
-        onChangeText={setUserName}
-      />
-      <FormItem
-        value={firstName}
-        label="FirstName"
-        onChangeText={setFirstName}
-      />
-      <FormItem
-        value={lastName}
-        label="LastName"
-        onChangeText={setLastName}
-      />
+    <Form
+      onButtonPress={() =>
+        update({ id: initialValues.id, username, firstName, lastName, pdgaNumber })
+      }
+      buttonText="Update"
+    >
+      <FormItem value={username} label="Username" onChangeText={setUserName} />
+      <FormItem value={firstName} label="FirstName" onChangeText={setFirstName} />
+      <FormItem value={lastName} label="LastName" onChangeText={setLastName} />
       <FormItem
         value={pdgaNumber.toString()}
         label="PDGA number"
-        onChangeText={value => setPdgaNumber(parseInt(value))}
+        onChangeText={(value) => setPdgaNumber(parseInt(value))}
       />
     </Form>
   )

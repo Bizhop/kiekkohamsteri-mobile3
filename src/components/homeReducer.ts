@@ -1,4 +1,4 @@
-import * as SecureStore from 'expo-secure-store'
+import * as SecureStore from "expo-secure-store"
 
 import { HomeActions, IHomeState } from "../types"
 
@@ -27,7 +27,7 @@ export default function homeReducer(
       return {
         ...state,
         user: null,
-        error: null
+        error: null,
       }
     case LOGIN_SUCCESS:
       const loginSuccessPayload = action.payload || null
@@ -36,7 +36,7 @@ export default function homeReducer(
         return {
           ...state,
           user: loginSuccessPayload.data,
-          error: null
+          error: null,
         }
       } else return state
     case LOGIN_FAIL:
@@ -44,24 +44,24 @@ export default function homeReducer(
       return {
         ...state,
         user: null,
-        error: "Login failed: " + action.error?.message
+        error: "Login failed",
       }
     case PREPARE_USER_UPDATE:
       return {
         ...state,
-        userUpdating: true
+        userUpdating: true,
       }
     case UPDATE_USER:
       return {
         ...state,
         user: null,
-        error: null
+        error: null,
       }
     case UPDATE_USER_SUCCESS:
       return {
         ...state,
         user: action.payload?.data || null,
-        userUpdating: false
+        userUpdating: false,
       }
     case LOGOUT:
       SecureStore.deleteItemAsync("token")
