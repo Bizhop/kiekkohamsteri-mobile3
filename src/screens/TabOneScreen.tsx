@@ -7,8 +7,9 @@ import * as SecureStore from "expo-secure-store"
 
 import { Text, View } from "../components/Themed"
 import { IRootState } from "../store"
-import { HomeActions, IHomeState } from "../types"
+import { HomeActions, IHomeState, RootStackParamList } from "../types"
 import * as homeActions from "../components/homeActions"
+import { NativeStackScreenProps } from "@react-navigation/native-stack"
 
 const mapStateToProps = ({ home }: IRootState): IHomeState => {
   return home
@@ -26,7 +27,9 @@ const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
   }
 }
 
-type ReduxType = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatcherToProps>
+type ReduxType = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatcherToProps> &
+  NativeStackScreenProps<RootStackParamList>
 
 const TabOneScreen = (props: ReduxType) => {
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
@@ -34,7 +37,7 @@ const TabOneScreen = (props: ReduxType) => {
     androidClientId: "368284396209-9mdl024mu9bj3mpadovsk4le6uq8g5c8.apps.googleusercontent.com",
   })
 
-  const { user, error, login, logout } = props
+  const { user, error, login, logout, navigation } = props
 
   React.useEffect(() => {
     if (response?.type === "success") {
@@ -47,6 +50,7 @@ const TabOneScreen = (props: ReduxType) => {
     <View style={styles.container}>
       <Text style={styles.title}>Kiekkohamsteri</Text>
       {user && <Text>User: {user.username}</Text>}
+      {user && <Button title="New disc" onPress={() => navigation.navigate("Camera")} />}
       {error && <Text>Error: {error}</Text>}
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       {user ? (

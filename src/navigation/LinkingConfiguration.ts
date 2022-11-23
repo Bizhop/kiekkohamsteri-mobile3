@@ -28,6 +28,8 @@ const linking: LinkingOptions<RootStackParamList> = {
         },
       },
       User: "modal",
+      Disc: "modal",
+      Camera: "modal",
       NotFound: "*",
     },
   },

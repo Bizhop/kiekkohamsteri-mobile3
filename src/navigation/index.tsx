@@ -14,6 +14,7 @@ import Colors from "../constants/Colors"
 import useColorScheme from "../hooks/useColorScheme"
 import UserModalScreen from "../screens/UserModalScreen"
 import DiscModalScreen from "../screens/DiscModalScreen"
+import MyCamera from "../screens/MyCamera"
 import TabOneScreen from "../screens/TabOneScreen"
 import TabTwoScreen from "../screens/TabTwoScreen"
 import { RootStackParamList, RootTabParamList, RootTabScreenProps } from "../types"
@@ -48,6 +49,7 @@ function RootNavigator() {
       <Stack.Group screenOptions={{ presentation: "modal" }}>
         <Stack.Screen name="User" component={UserModalScreen} />
         <Stack.Screen name="Disc" component={DiscModalScreen} />
+        <Stack.Screen name="Camera" component={MyCamera} />
       </Stack.Group>
     </Stack.Navigator>
   )

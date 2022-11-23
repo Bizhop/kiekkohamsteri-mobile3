@@ -18,6 +18,7 @@ export type RootStackParamList = {
   Root: NavigatorScreenParams<RootTabParamList> | undefined
   User: undefined
   Disc: undefined
+  Camera: undefined
   NotFound: undefined
 }
 

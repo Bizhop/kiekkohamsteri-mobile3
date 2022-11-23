@@ -12,6 +12,9 @@ export const GET_DROPDOWNS_FAIL = "discs/GET_DROPDOWNS_FAIL"
 export const UPDATE = "discs/UPDATE"
 export const UPDATE_SUCCESS = "discs/UPDATE_SUCCESS"
 export const UPDATE_FAIL = "discs/UPDATE_FAIL"
+export const CREATE = "discs/CREATE"
+export const CREATE_SUCCESS = "discs/CREATE_SUCCESS"
+export const CREATE_FAIL = "discs/CREATE_FAIL"
 
 const initialState: IDiscsState = {
   discs: [],

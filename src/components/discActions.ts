@@ -1,6 +1,7 @@
 import { action } from "typesafe-actions"
 
 import {
+  CREATE,
   GET,
   GET_FAIL,
   GET_SUCCESS,
@@ -23,3 +24,4 @@ export const updateDisc = (token: string, disc: any, id: number) =>
 export const updateDiscSuccess = (payload: IResponsePayload<IDisc>) =>
   action(UPDATE_SUCCESS, payload)
 export const updateDiscFail = (payload: IResponsePayload<IDisc>) => action(UPDATE_FAIL, payload)
+export const createDisc = (token: string, disc: any) => action(CREATE, disc)
