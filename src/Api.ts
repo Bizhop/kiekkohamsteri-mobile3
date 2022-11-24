@@ -41,3 +41,14 @@ export const putPayload = (url: string, data: any, token: string): IRequestPaylo
     },
   },
 })
+
+export const postPayload = (url: string, data: any, token: string): IRequestPayload => ({
+  request: {
+    method: "post",
+    url,
+    data,
+    headers: {
+      Authorization: token,
+    },
+  },
+})

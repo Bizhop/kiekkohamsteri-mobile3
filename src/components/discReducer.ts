@@ -15,6 +15,7 @@ export const UPDATE_FAIL = "discs/UPDATE_FAIL"
 export const CREATE = "discs/CREATE"
 export const CREATE_SUCCESS = "discs/CREATE_SUCCESS"
 export const CREATE_FAIL = "discs/CREATE_FAIL"
+export const PREPARE_NEW_DISC = "discs/PREPARE_NEW_DISC"
 
 const initialState: IDiscsState = {
   discs: [],
@@ -49,7 +50,7 @@ export default function discsReducer(
       return {
         ...state,
         loading: false,
-        discs: action.payload?.data.content || [],
+        discs: action.payload.data.content || [],
         error: null,
       }
     case GET_FAIL:
@@ -70,6 +71,16 @@ export default function discsReducer(
         ...state,
         discs: discsUpdated,
         discInEdit: null,
+      }
+    case CREATE_SUCCESS:
+      return {
+        ...state,
+        discInEdit: action.payload.data
+      }
+    case PREPARE_NEW_DISC:
+      return {
+        ...state,
+        discInEdit: null
       }
     default:
       return state

@@ -2,6 +2,8 @@ import { action } from "typesafe-actions"
 
 import {
   CREATE,
+  CREATE_FAIL,
+  CREATE_SUCCESS,
   GET,
   GET_FAIL,
   GET_SUCCESS,
@@ -10,8 +12,9 @@ import {
   UPDATE,
   UPDATE_FAIL,
   UPDATE_SUCCESS,
+  PREPARE_NEW_DISC,
 } from "./discReducer"
-import { getPayload, putPayload } from "../Api"
+import { getPayload, postPayload, putPayload } from "../Api"
 import { IDisc, IResponsePagedPayload, IResponsePayload } from "../types"
 
 export const prepareGet = () => action(PREPARE_GET)
@@ -24,4 +27,8 @@ export const updateDisc = (token: string, disc: any, id: number) =>
 export const updateDiscSuccess = (payload: IResponsePayload<IDisc>) =>
   action(UPDATE_SUCCESS, payload)
 export const updateDiscFail = (payload: IResponsePayload<IDisc>) => action(UPDATE_FAIL, payload)
-export const createDisc = (token: string, disc: any) => action(CREATE, disc)
+export const prepareNewDisc = () => action(PREPARE_NEW_DISC)
+export const createDisc = (token: string, data: string) => action(CREATE, postPayload("/kiekot", { data }, token))
+export const createDiscSuccess = (payload: IResponsePayload<IDisc>) =>
+  action(CREATE_SUCCESS, payload)
+export const createDiscFail = (payload: IResponsePayload<IDisc>) => action(CREATE_FAIL, payload)

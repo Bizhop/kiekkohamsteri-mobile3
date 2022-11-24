@@ -7,9 +7,10 @@ import * as SecureStore from "expo-secure-store"
 
 import { Text, View } from "../components/Themed"
 import { IRootState } from "../store"
-import { HomeActions, IHomeState, RootStackParamList } from "../types"
+import { DiscActions, HomeActions, IHomeState, RootStackParamList } from "../types"
 import * as homeActions from "../components/homeActions"
-import { NativeStackScreenProps } from "@react-navigation/native-stack"
+import * as discActions from "../components/discActions"
+import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack"
 
 const mapStateToProps = ({ home }: IRootState): IHomeState => {
   return home
@@ -19,9 +20,15 @@ const autoLogin = (dispatch: Dispatch<HomeActions>) => {
   SecureStore.getItemAsync("token").then((token) => token && dispatch(homeActions.login(token)))
 }
 
+const prepareNewDisc = (dispatch: Dispatch<DiscActions>, navigation: NativeStackNavigationProp<RootStackParamList>) => {
+  dispatch(discActions.prepareNewDisc())
+  navigation.navigate("Camera")
+}
+
 const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
   return {
     autoLogin: autoLogin(dispatch),
+    prepareNewDisc: (navigation: NativeStackNavigationProp<RootStackParamList>) => prepareNewDisc(dispatch, navigation), 
     login: (token: string) => dispatch(homeActions.login(token)),
     logout: () => dispatch(homeActions.logout()),
   }
@@ -37,7 +44,7 @@ const TabOneScreen = (props: ReduxType) => {
     androidClientId: "368284396209-9mdl024mu9bj3mpadovsk4le6uq8g5c8.apps.googleusercontent.com",
   })
 
-  const { user, error, login, logout, navigation } = props
+  const { user, error, login, logout, prepareNewDisc, navigation } = props
 
   React.useEffect(() => {
     if (response?.type === "success") {
@@ -50,7 +57,7 @@ const TabOneScreen = (props: ReduxType) => {
     <View style={styles.container}>
       <Text style={styles.title}>Kiekkohamsteri</Text>
       {user && <Text>User: {user.username}</Text>}
-      {user && <Button title="New disc" onPress={() => navigation.navigate("Camera")} />}
+      {user && <Button title="New disc" onPress={() => prepareNewDisc(navigation)} />}
       {error && <Text>Error: {error}</Text>}
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       {user ? (
