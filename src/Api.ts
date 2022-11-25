@@ -52,3 +52,13 @@ export const postPayload = (url: string, data: any, token: string): IRequestPayl
     },
   },
 })
+
+export const deletePayload = (url: string, token: string): IRequestPayload => ({
+  request: {
+    method: "delete",
+    url,
+    headers: {
+      Authorization: token
+    }
+  }
+})

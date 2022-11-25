@@ -12,9 +12,12 @@ import {
   UPDATE,
   UPDATE_FAIL,
   UPDATE_SUCCESS,
-  PREPARE_NEW_DISC,
+  PREPARE_CREATE,
+  DELETE,
+  DELETE_SUCCESS,
+  DELETE_FAIL,
 } from "./discReducer"
-import { getPayload, postPayload, putPayload } from "../Api"
+import { deletePayload, getPayload, postPayload, putPayload } from "../Api"
 import { IDisc, IResponsePagedPayload, IResponsePayload } from "../types"
 
 export const prepareGet = () => action(PREPARE_GET)
@@ -27,8 +30,12 @@ export const updateDisc = (token: string, disc: any, id: number) =>
 export const updateDiscSuccess = (payload: IResponsePayload<IDisc>) =>
   action(UPDATE_SUCCESS, payload)
 export const updateDiscFail = (payload: IResponsePayload<IDisc>) => action(UPDATE_FAIL, payload)
-export const prepareNewDisc = () => action(PREPARE_NEW_DISC)
-export const createDisc = (token: string, data: string) => action(CREATE, postPayload("/kiekot", { data }, token))
+export const prepareCreate = () => action(PREPARE_CREATE)
+export const createDisc = (token: string, data: string) =>
+  action(CREATE, postPayload("/kiekot", { data }, token))
 export const createDiscSuccess = (payload: IResponsePayload<IDisc>) =>
   action(CREATE_SUCCESS, payload)
 export const createDiscFail = (payload: IResponsePayload<IDisc>) => action(CREATE_FAIL, payload)
+export const deleteDisc = (token: string, id: number) => action(DELETE, deletePayload(`/kiekot/${id}`, token), { id })
+export const deleteSuccess = (payload: any, meta: any) => action(DELETE_SUCCESS, payload, meta)
+export const deleteFail = (payload: any, meta: any) => action(DELETE_FAIL, payload, meta)

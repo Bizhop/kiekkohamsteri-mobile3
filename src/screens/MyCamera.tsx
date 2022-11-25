@@ -13,15 +13,16 @@ import { View, Text } from "../components/Themed"
 import { RootStackParamList } from "../types"
 import * as discActions from "../components/discActions"
 import { IRootState } from "../store"
+import { imageFormat } from "../constants/Discs"
+
+const mapStateToProps = ({ discs }: IRootState): IDiscsState => {
+  return discs
+}
 
 const createDisc = (dispatch: Dispatch, data: string) => {
   SecureStore.getItemAsync("token").then(
     (token) => token && dispatch(discActions.createDisc(token, data)),
   )
-}
-
-const mapStateToProps = ({ discs }: IRootState): IDiscsState => {
-  return discs
 }
 
 const mapDispatcherToProps = (dispatch: Dispatch<DiscActions>) => {
@@ -30,7 +31,8 @@ const mapDispatcherToProps = (dispatch: Dispatch<DiscActions>) => {
   }
 }
 
-type ReduxType = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatcherToProps> &
+type ReduxType = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatcherToProps> &
   NativeStackScreenProps<RootStackParamList>
 
 const MyCamera = (props: ReduxType) => {
@@ -62,24 +64,27 @@ const MyCamera = (props: ReduxType) => {
     )
   }
 
-  const toggleCameraType = () => setType(type === CameraType.back ? CameraType.front : CameraType.back)
+  const toggleCameraType = () =>
+    setType(type === CameraType.back ? CameraType.front : CameraType.back)
 
   const resizeAndCrop = (imageUri: string) => {
     camera?.pausePreview()
     //image should be 800x600 (4:3) after resize
     manipulateAsync(
       imageUri,
-      [
-        { resize: { width: 600 } },
-        { crop: { originX: 0, originY: 100, width: 600, height: 600 } }
-      ],
-      { compress: 0.8, format: SaveFormat.JPEG, base64: true })
-      .then(cropped => cropped.base64 ? createDisc("data:image/jpg;base64," + cropped.base64) : console.log("Result has no base64 image"))
-      .catch(error => console.log(error))
+      [{ resize: { width: 600 } }, { crop: { originX: 0, originY: 100, width: 600, height: 600 } }],
+      imageFormat,
+    )
+      .then((cropped) =>
+        cropped.base64
+          ? createDisc("data:image/jpg;base64," + cropped.base64)
+          : console.log("Result has no base64 image"),
+      )
+      .catch((error) => console.log(error))
   }
 
   const pictureOptions: CameraPictureOptions = {
-    quality: 1
+    quality: 1,
   }
 
   const takePicture = () => {
@@ -88,14 +93,19 @@ const MyCamera = (props: ReduxType) => {
       return
     }
 
-    camera.takePictureAsync(pictureOptions)
-      .then(photo => resizeAndCrop(photo.uri))
-      .catch(error => console.log(error))
+    camera
+      .takePictureAsync(pictureOptions)
+      .then((photo) => resizeAndCrop(photo.uri))
+      .catch((error) => console.log(error))
   }
 
   return (
     <View style={styles.container}>
-      <Camera style={{ alignSelf: "flex-start", height: height, width: width }} type={type} ref={(r) => (camera = r)} />
+      <Camera
+        style={{ alignSelf: "flex-start", height: height, width: width }}
+        type={type}
+        ref={(r) => (camera = r)}
+      />
       <View style={styles.buttonContainer}>
         <TouchableOpacity style={styles.button} onPress={takePicture}>
           <FontAwesome size={30} color="white" name="dot-circle-o" />

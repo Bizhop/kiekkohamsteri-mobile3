@@ -1,4 +1,4 @@
-import { StyleSheet, ActivityIndicator } from "react-native"
+import { StyleSheet, ActivityIndicator, Alert } from "react-native"
 import { Dispatch } from "redux"
 import * as SecureStore from "expo-secure-store"
 import { ListItem, Avatar } from "@rneui/themed"
@@ -7,9 +7,10 @@ import * as discActions from "../components/discActions"
 import * as DiscsConstants from "../constants/Discs"
 import { View } from "../components/Themed"
 import { IRootState } from "../store"
-import { DiscActions, IDisc, IDiscsState, RootStackParamList, RootStackScreenProps } from "../types"
+import { DiscActions, IDisc, IDiscsState, RootStackParamList } from "../types"
 import { connect } from "react-redux"
 import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack"
+import Colors from "../constants/Colors"
 
 const getDiscs = (dispatch: Dispatch) => {
   dispatch(discActions.prepareGet())
@@ -25,6 +26,10 @@ const openEdit = (
   navigation.navigate("Disc")
 }
 
+const deleteDisc = (dispatch: Dispatch, id: number) => {
+  SecureStore.getItemAsync("token").then((token) => token && dispatch(discActions.deleteDisc(token, id)))
+}
+
 const mapStateToProps = ({ discs }: IRootState): IDiscsState => {
   return discs
 }
@@ -34,6 +39,7 @@ const mapDispatcherToProps = (dispatch: Dispatch<DiscActions>) => {
     getDiscs: getDiscs(dispatch),
     openEdit: (index: number, navigation: NativeStackNavigationProp<RootStackParamList>) =>
       openEdit(dispatch, index, navigation),
+    deleteDisc: (id: number) => deleteDisc(dispatch, id)
   }
 }
 
@@ -42,8 +48,25 @@ type ReduxType = ReturnType<typeof mapStateToProps> &
   NativeStackScreenProps<RootStackParamList>
 
 const TabTwoScreen = (props: ReduxType) => {
-  const { discs, loading, navigation, openEdit } = props
+  const { discs, loading, navigation, openEdit, deleteDisc } = props
   const { imagesUrl, discBasics, discStats } = DiscsConstants
+
+  const deleteDialog = (id: number) => {
+    Alert.alert(
+      "Delete disc",
+      "Are you sure you want to delete this disc?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Delete",
+          onPress: () => deleteDisc(id)
+        }
+      ]
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -57,6 +80,7 @@ const TabTwoScreen = (props: ReduxType) => {
               <ListItem.Title>{discBasics(disc)}</ListItem.Title>
               <ListItem.Subtitle>{discStats(disc)}</ListItem.Subtitle>
             </ListItem.Content>
+            <ListItem.Chevron style={styles.deleteButton} color="white" type="font-awesome" name="trash" size={20} onPress={() => deleteDialog(disc.id)} />
           </ListItem>
         ))
       )}
@@ -73,5 +97,12 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
+  },
+  deleteButton: {
+    padding: 10,
+    borderWidth: 2,
+    borderRadius: 15,
+    borderColor: Colors.red.dark,
+    backgroundColor: Colors.red.normal,
   },
 })

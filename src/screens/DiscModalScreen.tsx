@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ActivityIndicator, StyleSheet, Image, Switch, ScrollView } from "react-native"
+import { ActivityIndicator, StyleSheet, Image, Switch, ScrollView, TouchableOpacity, Alert } from "react-native"
 import { connect } from "react-redux"
 import { Dispatch } from "redux"
 import { Form, FormItem, Picker } from "react-native-form-component"
@@ -21,6 +21,8 @@ import {
 import * as DiscsConstants from "../constants/Discs"
 import { assoc, omit, prop } from "ramda"
 import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack"
+import { FontAwesome } from "@expo/vector-icons"
+import Colors from "../constants/Colors"
 
 const mapStateToProps = (root: IRootState): IDiscsState & IDropdownsState => {
   return {
@@ -47,11 +49,19 @@ const updateDisc = (
   navigation.navigate("TabTwo")
 }
 
+const deleteDisc = (dispatch: Dispatch, id: number, navigation: NativeStackNavigationProp<RootTabParamList>) => {
+  SecureStore.getItemAsync("token").then(
+    (token) => token && dispatch(discActions.deleteDisc(token, id)),
+  )
+  navigation.navigate("TabTwo")
+}
+
 const mapDispatcherToProps = (dispatch: Dispatch<DiscActions & DropdownActions>) => {
   return {
     updateDropdowns: (manufacturerId: number) => getByManufacturerId(dispatch, manufacturerId),
-    updateDisc: (disc: any, id: number, navigation: any) =>
+    updateDisc: (disc: any, id: number, navigation: NativeStackNavigationProp<RootTabParamList>) =>
       updateDisc(dispatch, disc, id, navigation),
+    deleteDisc: (id: number, navigation: NativeStackNavigationProp<RootTabParamList>) => deleteDisc(dispatch, id, navigation)
   }
 }
 
@@ -60,12 +70,29 @@ type ReduxType = ReturnType<typeof mapStateToProps> &
   NativeStackScreenProps<RootTabParamList>
 
 const DiscModalScreen = (props: ReduxType) => {
-  const { discInEdit, dropdowns, selectedManufacturerId, updateDropdowns, navigation, updateDisc } =
+  const { discInEdit, dropdowns, selectedManufacturerId, updateDropdowns, navigation, updateDisc, deleteDisc } =
     props
   const { imagesUrl, discBasics, discStats } = DiscsConstants
 
   if (discInEdit && !selectedManufacturerId) {
     updateDropdowns(discInEdit.valmId)
+  }
+
+  const deleteDialog = (id: number) => {
+    Alert.alert(
+      "Delete disc",
+      "Are you sure you want to delete this disc?",
+      [
+        {
+          text: "Cancel",
+          style: "cancel"
+        },
+        {
+          text: "Delete",
+          onPress: () => deleteDisc(id, navigation)
+        }
+      ]
+    )
   }
 
   return (
@@ -81,6 +108,11 @@ const DiscModalScreen = (props: ReduxType) => {
             updateDropdowns={updateDropdowns}
             updateDisc={(disc: any, id: number) => updateDisc(disc, id, navigation)}
           />
+          <View style={styles.row}>
+            <TouchableOpacity style={styles.deleteButton} onPress={() => deleteDialog(discInEdit.id)}>
+              <FontAwesome name="trash" color="white" size={20} />
+            </TouchableOpacity>
+          </View>
         </ScrollView>
       ) : (
         <ActivityIndicator size="large" />
@@ -122,6 +154,7 @@ const DiscEditForm = (props: {
     <Form
       onButtonPress={() => updateDisc(omit(["valmId"], state), initialValues.id)}
       buttonText="Update"
+      buttonStyle={styles.submitButton}
     >
       <DropdownSelector
         label="Manufacturer"
@@ -140,7 +173,7 @@ const DiscEditForm = (props: {
         items={dropdowns.molds.map((mold) => ({ label: mold.kiekko, value: mold.id }))}
         state={state}
         setState={setState}
-        updateDropdowns={() => {}}
+        updateDropdowns={() => { }}
       />
       <DropdownSelector
         label="Plastic"
@@ -148,7 +181,7 @@ const DiscEditForm = (props: {
         items={dropdowns.muovit.map((plastic) => ({ label: plastic.muovi, value: plastic.id }))}
         state={state}
         setState={setState}
-        updateDropdowns={() => {}}
+        updateDropdowns={() => { }}
       />
       <DropdownSelector
         label="Color"
@@ -156,7 +189,7 @@ const DiscEditForm = (props: {
         items={dropdowns.varit.map((color) => ({ label: color.vari, value: color.id }))}
         state={state}
         setState={setState}
-        updateDropdowns={() => {}}
+        updateDropdowns={() => { }}
       />
       <DropdownSelector
         label="Condition"
@@ -164,7 +197,7 @@ const DiscEditForm = (props: {
         items={dropdowns.kunto.map((condition) => ({ label: condition.nimi, value: condition.id }))}
         state={state}
         setState={setState}
-        updateDropdowns={() => {}}
+        updateDropdowns={() => { }}
       />
       <DropdownSelector
         label="Markings"
@@ -172,7 +205,7 @@ const DiscEditForm = (props: {
         items={dropdowns.tussit.map((marking) => ({ label: marking.nimi, value: marking.id }))}
         state={state}
         setState={setState}
-        updateDropdowns={() => {}}
+        updateDropdowns={() => { }}
       />
       <FormItem
         value={state.paino}
@@ -240,6 +273,7 @@ const DropdownSelector = (props: {
     <View style={styles.inputRow}>
       <Text style={styles.label}>{label}</Text>
       <Picker
+        type="modal"
         selectedValue={prop(name, state)}
         items={items}
         onSelection={(item: any) => {
@@ -299,5 +333,23 @@ const styles = StyleSheet.create({
     flex: 4,
     flexDirection: "row",
     alignItems: "flex-start",
+  },
+  submitButton: {
+    margin: 20,
+    padding: 10,
+    backgroundColor: Colors.blue.normal,
+  },
+  deleteButton: {
+    margin: 20,
+    padding: 10,
+    borderWidth: 2,
+    borderRadius: 15,
+    borderColor: Colors.red.dark,
+    backgroundColor: Colors.red.normal,
+  },
+  row: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
   },
 })

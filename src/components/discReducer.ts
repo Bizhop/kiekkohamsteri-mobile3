@@ -1,4 +1,4 @@
-import { findIndex, prop, propEq, update } from "ramda"
+import { findIndex, prop, propEq, reject, update } from "ramda"
 import { DiscActions, IDisc, IDiscsState } from "../types"
 
 export const PREPARE_GET = "discs/PREPARE_GET"
@@ -15,7 +15,10 @@ export const UPDATE_FAIL = "discs/UPDATE_FAIL"
 export const CREATE = "discs/CREATE"
 export const CREATE_SUCCESS = "discs/CREATE_SUCCESS"
 export const CREATE_FAIL = "discs/CREATE_FAIL"
-export const PREPARE_NEW_DISC = "discs/PREPARE_NEW_DISC"
+export const PREPARE_CREATE = "discs/PREPARE_CREATE"
+export const DELETE = "discs/DELETE"
+export const DELETE_SUCCESS = "discs/DELETE_SUCCESS"
+export const DELETE_FAIL = "discs/DELETE_FAIL"
 
 const initialState: IDiscsState = {
   discs: [],
@@ -66,20 +69,26 @@ export default function discsReducer(
         discInEdit: state.discs[action.payload.index],
       }
     case UPDATE_SUCCESS:
-      const discsUpdated = updateDiscsArray(state.discs, action.payload.data)
+      const discsWithUpdate = updateDiscsArray(state.discs, action.payload.data)
       return {
         ...state,
-        discs: discsUpdated,
+        discs: discsWithUpdate,
         discInEdit: null,
       }
     case CREATE_SUCCESS:
       return {
         ...state,
-        discInEdit: action.payload.data
+        discInEdit: action.payload.data,
       }
-    case PREPARE_NEW_DISC:
+    case PREPARE_CREATE:
       return {
         ...state,
+        discInEdit: null,
+      }
+    case DELETE_SUCCESS:
+      return {
+        ...state,
+        discs: reject((disc: IDisc) => disc.id == action.meta.previousAction.meta.id, state.discs),
         discInEdit: null
       }
     default:

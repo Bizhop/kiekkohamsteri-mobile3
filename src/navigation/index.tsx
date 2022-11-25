@@ -8,7 +8,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs"
 import { NavigationContainer, DefaultTheme, DarkTheme } from "@react-navigation/native"
 import { createNativeStackNavigator } from "@react-navigation/native-stack"
 import * as React from "react"
-import { ColorSchemeName, Pressable } from "react-native"
+import { ColorSchemeName, TouchableOpacity } from "react-native"
 
 import Colors from "../constants/Colors"
 import useColorScheme from "../hooks/useColorScheme"
@@ -74,23 +74,20 @@ function BottomTabNavigator() {
       <BottomTab.Screen
         name="TabOne"
         component={TabOneScreen}
-        options={({ navigation }: RootTabScreenProps<"TabOne">) => ({
+        options={({ navigation }: any) => ({
           title: "Home",
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
           headerRight: () => (
-            <Pressable
+            <TouchableOpacity
               onPress={() => navigation.navigate("User")}
-              style={({ pressed }) => ({
-                opacity: pressed ? 0.5 : 1,
-              })}
             >
               <FontAwesome
-                name="gear"
+                name="user-circle-o"
                 size={25}
                 color={Colors[colorScheme].text}
                 style={{ marginRight: 15 }}
               />
-            </Pressable>
+            </TouchableOpacity>
           ),
         })}
       />
