@@ -1,3 +1,4 @@
+import * as React from "react"
 import { StyleSheet, ActivityIndicator, Alert } from "react-native"
 import { Dispatch } from "redux"
 import * as SecureStore from "expo-secure-store"
@@ -7,10 +8,11 @@ import * as discActions from "../components/discActions"
 import * as DiscsConstants from "../constants/Discs"
 import { View } from "../components/Themed"
 import { IRootState } from "../store"
-import { DiscActions, IDisc, IDiscsState, RootStackParamList } from "../types"
+import { DiscActions, IDisc, RootStackParamList } from "../types"
 import { connect } from "react-redux"
 import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack"
 import Colors from "../constants/Colors"
+import AccessCheck from "./AccessCheck"
 
 const getDiscs = (dispatch: Dispatch) => {
   dispatch(discActions.prepareGet())
@@ -30,8 +32,8 @@ const deleteDisc = (dispatch: Dispatch, id: number) => {
   SecureStore.getItemAsync("token").then((token) => token && dispatch(discActions.deleteDisc(token, id)))
 }
 
-const mapStateToProps = ({ discs }: IRootState): IDiscsState => {
-  return discs
+const mapStateToProps = (root: IRootState): IRootState => {
+  return root
 }
 
 const mapDispatcherToProps = (dispatch: Dispatch<DiscActions>) => {
@@ -48,8 +50,14 @@ type ReduxType = ReturnType<typeof mapStateToProps> &
   NativeStackScreenProps<RootStackParamList>
 
 const TabTwoScreen = (props: ReduxType) => {
-  const { discs, loading, navigation, openEdit, deleteDisc } = props
+  const { discs, loading } = props.discs
+  const { user, consent } = props.home
+  const { navigation, openEdit, deleteDisc } = props
   const { imagesUrl, discBasics, discStats } = DiscsConstants
+
+  if(!user || !consent) {
+    return <AccessCheck user={user} consent={consent} />
+  }
 
   const deleteDialog = (id: number) => {
     Alert.alert(
@@ -91,6 +99,11 @@ const TabTwoScreen = (props: ReduxType) => {
 export default connect(mapStateToProps, mapDispatcherToProps)(TabTwoScreen)
 
 const styles = StyleSheet.create({
+  defaultContainer: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+  },
   container: {
     flex: 1,
   },

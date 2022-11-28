@@ -1,6 +1,6 @@
 import * as React from "react"
 import { StatusBar } from "expo-status-bar"
-import { Platform, StyleSheet } from "react-native"
+import { Platform, StyleSheet, TouchableOpacity } from "react-native"
 import { connect } from "react-redux"
 import { Dispatch } from "redux"
 import { Form, FormItem } from "react-native-form-component"
@@ -8,8 +8,11 @@ import * as SecureStore from "expo-secure-store"
 
 import { Text, View } from "../components/Themed"
 import { IRootState } from "../store"
-import { HomeActions, IHomeState, IUser } from "../types"
+import { HomeActions, IHomeState, IUser, RootStackParamList } from "../types"
 import * as homeActions from "../components/homeActions"
+import AccessCheck from "./AccessCheck"
+import Colors from "../constants/Colors"
+import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack"
 
 const mapStateToProps = ({ home }: IRootState): IHomeState => {
   return home
@@ -22,21 +25,37 @@ const updateUser = (user: IUser, dispatch: Dispatch<HomeActions>) => {
   )
 }
 
+const unsetConsent = (dispatch: Dispatch, navigation: NativeStackNavigationProp<RootStackParamList>) => {
+  SecureStore.deleteItemAsync("consent").then(
+    () => {
+      dispatch(homeActions.unsetConsent())
+      navigation.navigate("Root")
+    })
+}
+
 const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
   return {
     updateUser: (user: IUser) => updateUser(user, dispatch),
+    unsetConsent: (navigation: NativeStackNavigationProp<RootStackParamList>) => unsetConsent(dispatch, navigation)
   }
 }
 
-type ReduxType = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatcherToProps>
+type ReduxType = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatcherToProps> & NativeStackScreenProps<RootStackParamList>
 
 const UserModalScreen = (props: ReduxType) => {
-  const { user, updateUser } = props
+  const { consent, user, updateUser, unsetConsent, navigation } = props
+
+  if(!user || !consent) {
+    return <AccessCheck user={user} consent={consent} />
+  }
 
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Edit user details</Text>
-      {user && <UserEditForm initialValues={user} update={updateUser} />}
+      <UserEditForm initialValues={user} update={updateUser} />
+      <TouchableOpacity style={styles.button} onPress={() => unsetConsent(navigation)}>
+          <Text darkColor="white" lightColor="white">Poista sovelluksen käyttöehtojen hyväksyntä</Text>
+        </TouchableOpacity>
 
       {/* Use a light status bar on iOS to account for the black space above the modal */}
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
@@ -83,4 +102,12 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
   },
+  button: {
+    margin: 20,
+    padding: 10,
+    borderWidth: 2,
+    borderRadius: 15,
+    borderColor: Colors.blue.dark,
+    backgroundColor: Colors.blue.normal,
+  }
 })

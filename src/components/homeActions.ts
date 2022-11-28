@@ -1,9 +1,12 @@
 import {
+  CONSENT_LOADED,
   LOGIN,
   LOGIN_FAIL,
   LOGIN_SUCCESS,
   LOGOUT,
   PREPARE_USER_UPDATE,
+  SET_CONSENT,
+  UNSET_CONSENT,
   UPDATE_USER,
   UPDATE_USER_FAIL,
   UPDATE_USER_SUCCESS,
@@ -31,5 +34,7 @@ export const updateUserSuccess = (payload: IResponsePayload<IUser>) =>
   action(UPDATE_USER_SUCCESS, payload)
 export const updateUserFail = (payload: IResponsePayload<IUser>) =>
   action(UPDATE_USER_FAIL, payload)
-
 export const logout = () => action(LOGOUT)
+export const setConsent = () => action(SET_CONSENT)
+export const unsetConsent = () => action(UNSET_CONSENT)
+export const consentLoaded = (consent: string | null) => action(CONSENT_LOADED, { consent })

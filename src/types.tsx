@@ -38,6 +38,8 @@ export type RootTabScreenProps<Screen extends keyof RootTabParamList> = Composit
 >
 
 export interface IHomeState {
+  loadingConsent: boolean
+  consent: boolean
   user: IUser | null
   userUpdating: boolean
   error: string | null

@@ -1,6 +1,6 @@
 import * as React from "react"
 import * as Google from "expo-auth-session/providers/google"
-import { StyleSheet, Button, TouchableOpacity, Image } from "react-native"
+import { StyleSheet, Button, TouchableOpacity, Image, ActivityIndicator } from "react-native"
 import { connect } from "react-redux"
 import { Dispatch } from "redux"
 import * as SecureStore from "expo-secure-store"
@@ -41,6 +41,12 @@ const createDisc = (dispatch: Dispatch, data: string, navigation: NativeStackNav
   navigation.navigate("Disc")
 }
 
+const setConsent = (dispatch: Dispatch) => {
+  SecureStore.setItemAsync("consent", "true").then(
+    () => dispatch(homeActions.setConsent())
+  )
+}
+
 const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
   return {
     autoLogin: autoLogin(dispatch),
@@ -49,6 +55,8 @@ const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
     createDisc: (data: string, navigation: NativeStackNavigationProp<RootStackParamList>,) => createDisc(dispatch, data, navigation),
     login: (token: string) => dispatch(homeActions.login(token)),
     logout: () => dispatch(homeActions.logout()),
+    setConsent: () => setConsent(dispatch),
+    consentLoaded: (consent: string | null) => dispatch(homeActions.consentLoaded(consent))
   }
 }
 
@@ -62,7 +70,7 @@ const TabOneScreen = (props: ReduxType) => {
     androidClientId: "368284396209-9mdl024mu9bj3mpadovsk4le6uq8g5c8.apps.googleusercontent.com",
   })
 
-  const { user, error, login, logout, prepareCreate, createDisc, navigation } = props
+  const { loadingConsent, consent, user, error, login, logout, prepareCreate, createDisc, setConsent, consentLoaded, navigation } = props
 
   React.useEffect(() => {
     if (response?.type === "success") {
@@ -89,6 +97,30 @@ const TabOneScreen = (props: ReduxType) => {
     })
   }
 
+  if(loadingConsent) {
+    SecureStore.getItemAsync("consent").then(consent => consentLoaded(consent))
+    return (
+      <View style={styles.container}>
+        <ActivityIndicator size="large" />
+      </View>
+    )
+  }
+
+  if(!consent) {
+    return (
+      <View style={styles.container}>
+        <Text style={styles.subtitle}>Hyväksy sovelluksen käyttöoikeudet</Text>
+        <View style={styles.consent}>
+          <Text>{"\u2022 Kiekkohamsteri kerää ja tallentaa sähköpostiosoitteesi Googlen kirjautumisen kautta, tarkoituksena käyttäjätietojen hallinta"}</Text>
+          <Text>{"\u2022 Kiekkohamsteri kerää ja tallentaa sovelluksen kautta ottamasi valokuvat, tarkoituksena sovelluksen pääasiallinen toiminta"}</Text>
+        </View>
+        <TouchableOpacity style={styles.button} onPress={() => setConsent()}>
+          <Text darkColor="white" lightColor="white">Hyväksyn</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       <Image style={styles.logo} source={logo} />
@@ -101,7 +133,7 @@ const TabOneScreen = (props: ReduxType) => {
           {user.groups && user.groups.length > 0 &&
             <View>
               <Text style={styles.subtitle}>Groups</Text>
-              {user.groups.map(group => <Text>{`\u2022 ${group.name}`}</Text> )}
+              {user.groups.map(group => <Text key={`group-${group.id}`}> {`\u2022 ${group.name}`}</Text> )}
             </View>
           }
         </View>
@@ -121,7 +153,7 @@ const TabOneScreen = (props: ReduxType) => {
       {error && <Text>Error: {error}</Text>}
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       {user ? (
-        <Button title="Logout" color="red" onPress={logout} />
+        <Button title="Logout" color="red" onPress={() => logout()} />
       ) : (
         <Button disabled={!request} title="Login" onPress={() => promptAsync()} />
       )}
@@ -161,9 +193,20 @@ const styles = StyleSheet.create({
     borderColor: Colors.blue.dark,
     backgroundColor: Colors.blue.normal,
   },
+  redButton: {
+    margin: 20,
+    padding: 10,
+    borderWidth: 2,
+    borderRadius: 15,
+    borderColor: Colors.red.dark,
+    backgroundColor: Colors.red.normal,
+  },
   separator: {
     marginVertical: 30,
     height: 2,
     width: "80%",
   },
+  consent: {
+    margin: 20
+  }
 })
