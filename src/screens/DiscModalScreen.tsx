@@ -1,5 +1,5 @@
 import * as React from "react"
-import { ActivityIndicator, StyleSheet, Image, Switch, ScrollView, TouchableOpacity, Alert } from "react-native"
+import { ActivityIndicator, StyleSheet, Image, Switch, ScrollView, TouchableOpacity } from "react-native"
 import { connect } from "react-redux"
 import { Dispatch } from "redux"
 import { Form, FormItem, Picker } from "react-native-form-component"
@@ -23,6 +23,8 @@ import { assoc, omit, prop } from "ramda"
 import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack"
 import { FontAwesome } from "@expo/vector-icons"
 import Colors from "../constants/Colors"
+import { i18n } from "../translations"
+import deleteDialog from "./deleteDialog"
 
 const mapStateToProps = (root: IRootState): IDiscsState & IDropdownsState => {
   return {
@@ -78,23 +80,6 @@ const DiscModalScreen = (props: ReduxType) => {
     updateDropdowns(discInEdit.valmId)
   }
 
-  const deleteDialog = (id: number) => {
-    Alert.alert(
-      "Delete disc",
-      "Are you sure you want to delete this disc?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel"
-        },
-        {
-          text: "Delete",
-          onPress: () => deleteDisc(id, navigation)
-        }
-      ]
-    )
-  }
-
   return (
     <View style={styles.container}>
       {discInEdit ? (
@@ -109,7 +94,7 @@ const DiscModalScreen = (props: ReduxType) => {
             updateDisc={(disc: any, id: number) => updateDisc(disc, id, navigation)}
           />
           <View style={styles.row}>
-            <TouchableOpacity style={styles.deleteButton} onPress={() => deleteDialog(discInEdit.id)}>
+            <TouchableOpacity style={styles.deleteButton} onPress={() => deleteDialog(discInEdit.id, deleteDisc, i18n, navigation)}>
               <FontAwesome name="trash" color="white" size={20} />
             </TouchableOpacity>
           </View>
@@ -153,11 +138,11 @@ const DiscEditForm = (props: {
   return (
     <Form
       onButtonPress={() => updateDisc(omit(["valmId"], state), initialValues.id)}
-      buttonText="Update"
+      buttonText={i18n.t("discs.update.button")}
       buttonStyle={styles.submitButton}
     >
       <DropdownSelector
-        label="Manufacturer"
+        label="discs.update.manufacturer"
         name="valmId"
         items={dropdowns.valms.map((manufacturer) => ({
           label: manufacturer.valmistaja,
@@ -168,7 +153,7 @@ const DiscEditForm = (props: {
         updateDropdowns={updateDropdowns}
       />
       <DropdownSelector
-        label="Mold"
+        label="discs.update.mold"
         name="moldId"
         items={dropdowns.molds.map((mold) => ({ label: mold.kiekko, value: mold.id }))}
         state={state}
@@ -176,7 +161,7 @@ const DiscEditForm = (props: {
         updateDropdowns={() => { }}
       />
       <DropdownSelector
-        label="Plastic"
+        label="discs.update.plastic"
         name="muoviId"
         items={dropdowns.muovit.map((plastic) => ({ label: plastic.muovi, value: plastic.id }))}
         state={state}
@@ -184,7 +169,7 @@ const DiscEditForm = (props: {
         updateDropdowns={() => { }}
       />
       <DropdownSelector
-        label="Color"
+        label="discs.update.color"
         name="variId"
         items={dropdowns.varit.map((color) => ({ label: color.vari, value: color.id }))}
         state={state}
@@ -192,7 +177,7 @@ const DiscEditForm = (props: {
         updateDropdowns={() => { }}
       />
       <DropdownSelector
-        label="Condition"
+        label="discs.update.condition"
         name="kunto"
         items={dropdowns.kunto.map((condition) => ({ label: condition.nimi, value: condition.id }))}
         state={state}
@@ -200,7 +185,7 @@ const DiscEditForm = (props: {
         updateDropdowns={() => { }}
       />
       <DropdownSelector
-        label="Markings"
+        label="discs.update.markings"
         name="tussit"
         items={dropdowns.tussit.map((marking) => ({ label: marking.nimi, value: marking.id }))}
         state={state}
@@ -209,31 +194,31 @@ const DiscEditForm = (props: {
       />
       <FormItem
         value={state.paino}
-        label="Weight"
+        label={i18n.t("discs.update.button")}
         onChangeText={(text) => setState({ ...state, paino: text })}
         onEndEditing={(e) =>
           updateState("paino", e.nativeEvent.text, initialValues, validateNumber, state, setState)
         }
       />
-      <Checkbox label="Glow" name="hohto" state={state} setState={setState} />
-      <Checkbox label="Special" name="spessu" state={state} setState={setState} />
-      <Checkbox label="Dyed" name="dyed" state={state} setState={setState} />
-      <Checkbox label="Swirly" name="swirly" state={state} setState={setState} />
-      <Checkbox label="For sale" name="myynnissa" state={state} setState={setState} />
+      <Checkbox label="discs.update.glow" name="hohto" state={state} setState={setState} />
+      <Checkbox label="discs.update.special" name="spessu" state={state} setState={setState} />
+      <Checkbox label="discs.update.dyed" name="dyed" state={state} setState={setState} />
+      <Checkbox label="discs.update.swirly" name="swirly" state={state} setState={setState} />
+      <Checkbox label="discs.update.forSale" name="myynnissa" state={state} setState={setState} />
       {state.myynnissa && (
         <FormItem
           value={state.hinta}
-          label="Price"
+          label={i18n.t("discs.update.price")}
           onChangeText={(text) => setState({ ...state, hinta: text })}
           onEndEditing={(e) =>
             updateState("hinta", e.nativeEvent.text, initialValues, validateNumber, state, setState)
           }
         />
       )}
-      <Checkbox label="Lost and found" name="loytokiekko" state={state} setState={setState} />
-      <Checkbox label="Lost" name="lost" state={state} setState={setState} />
-      <Checkbox label="In the bag" name="itb" state={state} setState={setState} />
-      <Checkbox label="Public disc" name="publicDisc" state={state} setState={setState} />
+      <Checkbox label="discs.update.lostAndFound" name="loytokiekko" state={state} setState={setState} />
+      <Checkbox label="discs.update.lost" name="lost" state={state} setState={setState} />
+      <Checkbox label="discs.update.itb" name="itb" state={state} setState={setState} />
+      <Checkbox label="discs.update.publicDisc" name="publicDisc" state={state} setState={setState} />
     </Form>
   )
 }
@@ -248,7 +233,7 @@ const Checkbox = (props: {
 
   return (
     <View style={styles.inputRow}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.label}>{i18n.t(label)}</Text>
       <View style={styles.checkbox}>
         <Switch
           value={prop(name, state)}
@@ -271,7 +256,7 @@ const DropdownSelector = (props: {
 
   return (
     <View style={styles.inputRow}>
-      <Text style={styles.label}>{label}</Text>
+      <Text style={styles.label}>{i18n.t(label)}</Text>
       <Picker
         type="modal"
         selectedValue={prop(name, state)}

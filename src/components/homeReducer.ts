@@ -1,7 +1,8 @@
 import * as SecureStore from "expo-secure-store"
 
 import { HomeActions, IHomeState } from "../types"
-import { consentLoaded } from "./homeActions"
+import { defaultLanguage } from "../translations"
+import { setLanguage } from "../translations"
 
 export const LOGIN = "home/LOGIN"
 export const LOGIN_SUCCESS = "home/LOGIN_SUCCESS"
@@ -14,6 +15,7 @@ export const LOGOUT = "home/LOGOUT"
 export const CONSENT_LOADED = "home/CONSENT_LOADED"
 export const SET_CONSENT = "home/SET_CONSENT"
 export const UNSET_CONSENT = "home/UNSET_CONSENT"
+export const SET_LANGUAGE = "home/SET_LANGUAGE"
 
 const initialState: IHomeState = {
   loadingConsent: true,
@@ -21,6 +23,7 @@ const initialState: IHomeState = {
   user: null,
   userUpdating: false,
   error: null,
+  language: defaultLanguage
 }
 
 export default function homeReducer(
@@ -85,6 +88,12 @@ export default function homeReducer(
         ...state,
         loadingConsent: false,
         consent: false
+      }
+    case SET_LANGUAGE:
+      setLanguage(action.payload.language)
+      return {
+        ...state,
+        language: action.payload.language
       }
     case LOGOUT:
       SecureStore.deleteItemAsync("token")

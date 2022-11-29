@@ -1,5 +1,5 @@
 import * as React from "react"
-import { StyleSheet, ActivityIndicator, Alert } from "react-native"
+import { StyleSheet, ActivityIndicator } from "react-native"
 import { Dispatch } from "redux"
 import * as SecureStore from "expo-secure-store"
 import { ListItem, Avatar } from "@rneui/themed"
@@ -13,6 +13,8 @@ import { connect } from "react-redux"
 import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack"
 import Colors from "../constants/Colors"
 import AccessCheck from "./AccessCheck"
+import deleteDialog from "./deleteDialog"
+import { i18n } from "../translations"
 
 const getDiscs = (dispatch: Dispatch) => {
   dispatch(discActions.prepareGet())
@@ -41,7 +43,7 @@ const mapDispatcherToProps = (dispatch: Dispatch<DiscActions>) => {
     getDiscs: getDiscs(dispatch),
     openEdit: (index: number, navigation: NativeStackNavigationProp<RootStackParamList>) =>
       openEdit(dispatch, index, navigation),
-    deleteDisc: (id: number) => deleteDisc(dispatch, id)
+    deleteDisc: (id: number, _navigation: any) => deleteDisc(dispatch, id)
   }
 }
 
@@ -59,23 +61,6 @@ const TabTwoScreen = (props: ReduxType) => {
     return <AccessCheck user={user} consent={consent} />
   }
 
-  const deleteDialog = (id: number) => {
-    Alert.alert(
-      "Delete disc",
-      "Are you sure you want to delete this disc?",
-      [
-        {
-          text: "Cancel",
-          style: "cancel"
-        },
-        {
-          text: "Delete",
-          onPress: () => deleteDisc(id)
-        }
-      ]
-    )
-  }
-
   return (
     <View style={styles.container}>
       {loading ? (
@@ -88,7 +73,7 @@ const TabTwoScreen = (props: ReduxType) => {
               <ListItem.Title>{discBasics(disc)}</ListItem.Title>
               <ListItem.Subtitle>{discStats(disc)}</ListItem.Subtitle>
             </ListItem.Content>
-            <ListItem.Chevron style={styles.deleteButton} color="white" type="font-awesome" name="trash" size={20} onPress={() => deleteDialog(disc.id)} />
+            <ListItem.Chevron style={styles.deleteButton} color="white" type="font-awesome" name="trash" size={20} onPress={() => deleteDialog(disc.id, deleteDisc, i18n, navigation)} />
           </ListItem>
         ))
       )}

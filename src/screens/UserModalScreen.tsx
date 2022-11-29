@@ -13,6 +13,7 @@ import * as homeActions from "../components/homeActions"
 import AccessCheck from "./AccessCheck"
 import Colors from "../constants/Colors"
 import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack"
+import { i18n } from "../translations"
 
 const mapStateToProps = ({ home }: IRootState): IHomeState => {
   return home
@@ -51,10 +52,10 @@ const UserModalScreen = (props: ReduxType) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Edit user details</Text>
+      <Text style={styles.title}>{i18n.t("home.user.edit")}</Text>
       <UserEditForm initialValues={user} update={updateUser} />
       <TouchableOpacity style={styles.button} onPress={() => unsetConsent(navigation)}>
-          <Text darkColor="white" lightColor="white">Poista sovelluksen käyttöehtojen hyväksyntä</Text>
+          <Text darkColor="white" lightColor="white">{i18n.t("home.consent.remove")}</Text>
         </TouchableOpacity>
 
       {/* Use a light status bar on iOS to account for the black space above the modal */}
@@ -76,14 +77,14 @@ const UserEditForm = (props: { initialValues: IUser; update: (user: IUser) => vo
       onButtonPress={() =>
         update({ id: initialValues.id, username, firstName, lastName, pdgaNumber })
       }
-      buttonText="Update"
+      buttonText={i18n.t("home.user.update")}
     >
-      <FormItem value={username} label="Username" onChangeText={setUserName} />
-      <FormItem value={firstName} label="FirstName" onChangeText={setFirstName} />
-      <FormItem value={lastName} label="LastName" onChangeText={setLastName} />
+      <FormItem value={username} label={i18n.t("home.user.username")} onChangeText={setUserName} />
+      <FormItem value={firstName} label={i18n.t("home.user.firstName")} onChangeText={setFirstName} />
+      <FormItem value={lastName} label={i18n.t("home.user.lastName")} onChangeText={setLastName} />
       <FormItem
         value={pdgaNumber.toString()}
-        label="PDGA number"
+        label={i18n.t("home.user.pdgaNumber")}
         onChangeText={(value) => setPdgaNumber(parseInt(value))}
       />
     </Form>
@@ -101,6 +102,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
+    marginBottom: 20
   },
   button: {
     margin: 20,

@@ -1,6 +1,6 @@
 import * as React from "react"
 import * as Google from "expo-auth-session/providers/google"
-import { StyleSheet, Button, TouchableOpacity, Image, ActivityIndicator } from "react-native"
+import { StyleSheet, TouchableOpacity, Image, ActivityIndicator } from "react-native"
 import { connect } from "react-redux"
 import { Dispatch } from "redux"
 import * as SecureStore from "expo-secure-store"
@@ -16,7 +16,8 @@ import * as homeActions from "../components/homeActions"
 import * as discActions from "../components/discActions"
 import { imageFormat } from "../constants/Discs"
 import Colors from "../constants/Colors"
-import { logo } from "../assets/images"
+import { en, fi, logo } from "../assets/images"
+import { i18n } from "../translations"
 
 const mapStateToProps = ({ home }: IRootState): IHomeState => {
   return home
@@ -56,7 +57,8 @@ const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
     login: (token: string) => dispatch(homeActions.login(token)),
     logout: () => dispatch(homeActions.logout()),
     setConsent: () => setConsent(dispatch),
-    consentLoaded: (consent: string | null) => dispatch(homeActions.consentLoaded(consent))
+    consentLoaded: (consent: string | null) => dispatch(homeActions.consentLoaded(consent)),
+    setLanguage: (language: string) => dispatch(homeActions.setLanguage(language))
   }
 }
 
@@ -64,13 +66,24 @@ type ReduxType = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatcherToProps> &
   NativeStackScreenProps<RootStackParamList>
 
+const LanguageSelector = (props: { setLanguage: (language: string) => void }) => (
+  <View style={styles.row}>
+    <TouchableOpacity onPress={() => props.setLanguage("fi")}>
+      <Image style={styles.flag} source={fi} />
+    </TouchableOpacity>
+    <TouchableOpacity onPress={() => props.setLanguage("en")}>
+      <Image style={styles.flag} source={en} />
+    </TouchableOpacity>
+  </View>
+)
+
 const TabOneScreen = (props: ReduxType) => {
   const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     expoClientId: "368284396209-ein43uvg6fe6etku0fl464kcno7v66sp.apps.googleusercontent.com",
     androidClientId: "368284396209-9mdl024mu9bj3mpadovsk4le6uq8g5c8.apps.googleusercontent.com",
   })
 
-  const { loadingConsent, consent, user, error, login, logout, prepareCreate, createDisc, setConsent, consentLoaded, navigation } = props
+  const { loadingConsent, consent, user, error, login, logout, prepareCreate, createDisc, setConsent, consentLoaded, setLanguage, navigation } = props
 
   React.useEffect(() => {
     if (response?.type === "success") {
@@ -109,13 +122,14 @@ const TabOneScreen = (props: ReduxType) => {
   if(!consent) {
     return (
       <View style={styles.container}>
-        <Text style={styles.subtitle}>Hyväksy sovelluksen käyttöoikeudet</Text>
+        <LanguageSelector setLanguage={setLanguage} />
+        <Text style={styles.subtitle}>{i18n.t("home.consent.title")}</Text>
         <View style={styles.consent}>
-          <Text>{"\u2022 Kiekkohamsteri kerää ja tallentaa sähköpostiosoitteesi Googlen kirjautumisen kautta, tarkoituksena käyttäjätietojen hallinta"}</Text>
-          <Text>{"\u2022 Kiekkohamsteri kerää ja tallentaa sovelluksen kautta ottamasi valokuvat, tarkoituksena sovelluksen pääasiallinen toiminta"}</Text>
+          <Text>{`\u2022 ${i18n.t("home.consent.row1")}`}</Text>
+          <Text>{`\u2022 ${i18n.t("home.consent.row2")}`}</Text>
         </View>
         <TouchableOpacity style={styles.button} onPress={() => setConsent()}>
-          <Text darkColor="white" lightColor="white">Hyväksyn</Text>
+          <Text darkColor="white" lightColor="white">{i18n.t("home.consent.button")}</Text>
         </TouchableOpacity>
       </View>
     )
@@ -123,16 +137,17 @@ const TabOneScreen = (props: ReduxType) => {
 
   return (
     <View style={styles.container}>
+      <LanguageSelector setLanguage={setLanguage} />
       <Image style={styles.logo} source={logo} />
       {user &&
         <View>
-          <Text style={styles.subtitle}>User details</Text>
+          <Text style={styles.subtitle}>{i18n.t("home.user.details")}</Text>
           <Text>{user.username}</Text>
           <Text>{`${user.firstName} ${user.lastName} #${user.pdgaNumber}`}</Text>
           <Text>{user.email}</Text>
           {user.groups && user.groups.length > 0 &&
             <View>
-              <Text style={styles.subtitle}>Groups</Text>
+              <Text style={styles.subtitle}>{i18n.t("home.user.groups")}</Text>
               {user.groups.map(group => <Text key={`group-${group.id}`}> {`\u2022 ${group.name}`}</Text> )}
             </View>
           }
@@ -141,7 +156,7 @@ const TabOneScreen = (props: ReduxType) => {
       {user && <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />}
       {user && (
         <View style={styles.row}>
-          <Text style={styles.subtitle}>New disc</Text>
+          <Text style={styles.subtitle}>{i18n.t("discs.new")}</Text>
           <TouchableOpacity style={styles.button} onPress={() => prepareCreate(navigation)}>
             <FontAwesome name="camera" color="white" size={25} />
           </TouchableOpacity>
@@ -153,9 +168,13 @@ const TabOneScreen = (props: ReduxType) => {
       {error && <Text>Error: {error}</Text>}
       <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
       {user ? (
-        <Button title="Logout" color="red" onPress={() => logout()} />
+        <TouchableOpacity style={styles.redButton} onPress={() => logout()}>
+          <MaterialCommunityIcons name="logout" color="white" size={25} />
+        </TouchableOpacity>
       ) : (
-        <Button disabled={!request} title="Login" onPress={() => promptAsync()} />
+        <TouchableOpacity style={styles.button} onPress={() => promptAsync()}>
+          <FontAwesome name="google" color="white" size={25} />
+        </TouchableOpacity>
       )}
     </View>
   )
@@ -207,6 +226,13 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   consent: {
+    margin: 20
+  },
+  flag: {
+    height: 25,
+    width: 35,
+    borderWidth: 1,
+    borderColor: "black",
     margin: 20
   }
 })

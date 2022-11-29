@@ -42,7 +42,8 @@ export interface IHomeState {
   consent: boolean
   user: IUser | null
   userUpdating: boolean
-  error: string | null
+  error: string | null,
+  language: string
 }
 
 export interface IDiscsState {
