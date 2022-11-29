@@ -20,7 +20,7 @@
       "android": {
         "serviceAccountKeyPath": "/home/ville/gcloud/kiekkohamsteri3-7f962ec0716b.json",
         "track": "internal",
-        "changesNotSentForReview": true
+        "releaseStatus": "draft"
       }
     }
   }
