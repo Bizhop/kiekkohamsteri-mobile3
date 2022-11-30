@@ -6,6 +6,7 @@ import {
   LOGOUT,
   PREPARE_USER_UPDATE,
   SET_CONSENT,
+  SET_LANGUAGE,
   UNSET_CONSENT,
   UPDATE_USER,
   UPDATE_USER_FAIL,
@@ -38,3 +39,4 @@ export const logout = () => action(LOGOUT)
 export const setConsent = () => action(SET_CONSENT)
 export const unsetConsent = () => action(UNSET_CONSENT)
 export const consentLoaded = (consent: string | null) => action(CONSENT_LOADED, { consent })
+export const setLanguage = (language: string) => action(SET_LANGUAGE, { language })

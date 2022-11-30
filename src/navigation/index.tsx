@@ -17,8 +17,9 @@ import DiscModalScreen from "../screens/DiscModalScreen"
 import MyCamera from "../screens/MyCamera"
 import TabOneScreen from "../screens/TabOneScreen"
 import TabTwoScreen from "../screens/TabTwoScreen"
-import { RootStackParamList, RootTabParamList, RootTabScreenProps } from "../types"
+import { RootStackParamList, RootTabParamList } from "../types"
 import LinkingConfiguration from "./LinkingConfiguration"
+import { i18n } from "../translations"
 
 export default function Navigation({ colorScheme }: { colorScheme: ColorSchemeName }) {
   return (
@@ -75,19 +76,19 @@ function BottomTabNavigator() {
         name="TabOne"
         component={TabOneScreen}
         options={({ navigation }: any) => ({
-          title: "Home",
+          title: i18n.t("home.title"),
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
           headerRight: () => (
-            <TouchableOpacity
-              onPress={() => navigation.navigate("User")}
-            >
-              <FontAwesome
-                name="user-circle-o"
-                size={25}
-                color={Colors[colorScheme].text}
-                style={{ marginRight: 15 }}
-              />
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => navigation.navigate("User")}
+              >
+                <FontAwesome
+                  name="user-circle-o"
+                  size={25}
+                  color={Colors[colorScheme].text}
+                  style={{ margin: 15 }}
+                />
+              </TouchableOpacity>
           ),
         })}
       />
@@ -95,7 +96,7 @@ function BottomTabNavigator() {
         name="TabTwo"
         component={TabTwoScreen}
         options={{
-          title: "Discs",
+          title: i18n.t("discs.title"),
           tabBarIcon: ({ color }) => <TabBarIcon name="circle-thin" color={color} />,
         }}
       />
