@@ -1,24 +1,16 @@
 import { findIndex, prop, propEq, reject, update } from "ramda"
+import {
+  CREATE_DISC_SUCCESS,
+  DELETE_DISC_SUCCESS,
+  GET_DISCS,
+  GET_DISCS_FAIL,
+  GET_DISCS_SUCCESS,
+  PREPARE_CREATE_DISC,
+  PREPARE_EDIT_DISC,
+  PREPARE_GET_DISC,
+  UPDATE_DISC_SUCCESS,
+} from "../constants/actionNames"
 import { DiscActions, IDisc, IDiscsState } from "../types"
-
-export const PREPARE_GET = "discs/PREPARE_GET"
-export const PREPARE_EDIT = "discs/PREPARE_EDIT"
-export const GET = "discs/GET"
-export const GET_SUCCESS = "discs/GET_SUCCESS"
-export const GET_FAIL = "discs/GET_FAIL"
-export const GET_DROPDOWNS = "discs/GET_DROPDOWNS"
-export const GET_DROPDOWNS_SUCCESS = "discs/GET_DROPDOWNS_SUCCESS"
-export const GET_DROPDOWNS_FAIL = "discs/GET_DROPDOWNS_FAIL"
-export const UPDATE = "discs/UPDATE"
-export const UPDATE_SUCCESS = "discs/UPDATE_SUCCESS"
-export const UPDATE_FAIL = "discs/UPDATE_FAIL"
-export const CREATE = "discs/CREATE"
-export const CREATE_SUCCESS = "discs/CREATE_SUCCESS"
-export const CREATE_FAIL = "discs/CREATE_FAIL"
-export const PREPARE_CREATE = "discs/PREPARE_CREATE"
-export const DELETE = "discs/DELETE"
-export const DELETE_SUCCESS = "discs/DELETE_SUCCESS"
-export const DELETE_FAIL = "discs/DELETE_FAIL"
 
 const initialState: IDiscsState = {
   discs: [],
@@ -36,60 +28,60 @@ export default function discsReducer(
   state: IDiscsState = initialState,
   action: DiscActions,
 ): IDiscsState {
-  action.type.startsWith("discs") && console.log(action)
+  //action.type.startsWith("discs") && console.log(action)
   switch (action.type) {
-    case PREPARE_GET:
+    case PREPARE_GET_DISC:
       return {
         ...state,
         loading: true,
       }
-    case GET:
+    case GET_DISCS:
       return {
         ...state,
         discs: [],
         error: null,
       }
-    case GET_SUCCESS:
+    case GET_DISCS_SUCCESS:
       return {
         ...state,
         loading: false,
         discs: action.payload.data.content || [],
         error: null,
       }
-    case GET_FAIL:
+    case GET_DISCS_FAIL:
       return {
         ...state,
         loading: false,
         discs: [],
         error: "Get discs failed",
       }
-    case PREPARE_EDIT:
+    case PREPARE_EDIT_DISC:
       return {
         ...state,
         discInEdit: state.discs[action.payload.index],
       }
-    case UPDATE_SUCCESS:
+    case UPDATE_DISC_SUCCESS:
       const discsWithUpdate = updateDiscsArray(state.discs, action.payload.data)
       return {
         ...state,
         discs: discsWithUpdate,
         discInEdit: null,
       }
-    case CREATE_SUCCESS:
+    case CREATE_DISC_SUCCESS:
       return {
         ...state,
         discInEdit: action.payload.data,
       }
-    case PREPARE_CREATE:
+    case PREPARE_CREATE_DISC:
       return {
         ...state,
         discInEdit: null,
       }
-    case DELETE_SUCCESS:
+    case DELETE_DISC_SUCCESS:
       return {
         ...state,
         discs: reject((disc: IDisc) => disc.id == action.meta.previousAction.meta.id, state.discs),
-        discInEdit: null
+        discInEdit: null,
       }
     default:
       return state

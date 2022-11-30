@@ -3,19 +3,19 @@ import * as SecureStore from "expo-secure-store"
 import { HomeActions, IHomeState } from "../types"
 import { defaultLanguage } from "../translations"
 import { setLanguage } from "../translations"
-
-export const LOGIN = "home/LOGIN"
-export const LOGIN_SUCCESS = "home/LOGIN_SUCCESS"
-export const LOGIN_FAIL = "home/LOGIN_FAIL"
-export const PREPARE_USER_UPDATE = "home/PREPARE_USER_UPDATE"
-export const UPDATE_USER = "home/UPDATE_USER"
-export const UPDATE_USER_SUCCESS = "home/UPDATE_USER_SUCCESS"
-export const UPDATE_USER_FAIL = "home/UPDATE_USER_FAIL"
-export const LOGOUT = "home/LOGOUT"
-export const CONSENT_LOADED = "home/CONSENT_LOADED"
-export const SET_CONSENT = "home/SET_CONSENT"
-export const UNSET_CONSENT = "home/UNSET_CONSENT"
-export const SET_LANGUAGE = "home/SET_LANGUAGE"
+import {
+  CONSENT_LOADED,
+  LOGIN,
+  LOGIN_FAIL,
+  LOGIN_SUCCESS,
+  LOGOUT,
+  PREPARE_USER_UPDATE,
+  SET_CONSENT,
+  SET_LANGUAGE,
+  UNSET_CONSENT,
+  UPDATE_USER,
+  UPDATE_USER_SUCCESS,
+} from "../constants/actionNames"
 
 const initialState: IHomeState = {
   loadingConsent: true,
@@ -23,14 +23,14 @@ const initialState: IHomeState = {
   user: null,
   userUpdating: false,
   error: null,
-  language: defaultLanguage
+  language: defaultLanguage,
 }
 
 export default function homeReducer(
   state: IHomeState = initialState,
   action: HomeActions,
 ): IHomeState {
-  action.type.startsWith("home") && console.log(action)
+  //action.type.startsWith("home") && console.log(action)
   switch (action.type) {
     case LOGIN:
       return {
@@ -76,31 +76,31 @@ export default function homeReducer(
       return {
         ...state,
         consent: action.payload.consent == "true",
-        loadingConsent: false
+        loadingConsent: false,
       }
     case SET_CONSENT:
       return {
         ...state,
-        consent: true
+        consent: true,
       }
     case UNSET_CONSENT:
       return {
         ...state,
         loadingConsent: false,
-        consent: false
+        consent: false,
       }
     case SET_LANGUAGE:
       setLanguage(action.payload.language)
       return {
         ...state,
-        language: action.payload.language
+        language: action.payload.language,
       }
     case LOGOUT:
       SecureStore.deleteItemAsync("token")
       return {
         ...initialState,
         loadingConsent: state.loadingConsent,
-        consent: state.consent
+        consent: state.consent,
       }
     default:
       return state

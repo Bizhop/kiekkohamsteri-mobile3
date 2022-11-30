@@ -14,7 +14,7 @@ import { IRootState } from "../store"
 import { DiscActions, HomeActions, IHomeState, RootStackParamList } from "../types"
 import * as homeActions from "../components/homeActions"
 import * as discActions from "../components/discActions"
-import { imageFormat } from "../constants/Discs"
+import { imageFormat } from "../constants/discs"
 import Colors from "../constants/Colors"
 import { en, fi, logo } from "../assets/images"
 import { i18n } from "../translations"
@@ -35,7 +35,11 @@ const prepareCreate = (
   navigation.navigate("Camera")
 }
 
-const createDisc = (dispatch: Dispatch, data: string, navigation: NativeStackNavigationProp<RootStackParamList>,) => {
+const createDisc = (
+  dispatch: Dispatch,
+  data: string,
+  navigation: NativeStackNavigationProp<RootStackParamList>,
+) => {
   SecureStore.getItemAsync("token").then(
     (token) => token && dispatch(discActions.createDisc(token, data)),
   )
@@ -43,9 +47,7 @@ const createDisc = (dispatch: Dispatch, data: string, navigation: NativeStackNav
 }
 
 const setConsent = (dispatch: Dispatch) => {
-  SecureStore.setItemAsync("consent", "true").then(
-    () => dispatch(homeActions.setConsent())
-  )
+  SecureStore.setItemAsync("consent", "true").then(() => dispatch(homeActions.setConsent()))
 }
 
 const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
@@ -53,12 +55,13 @@ const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
     autoLogin: autoLogin(dispatch),
     prepareCreate: (navigation: NativeStackNavigationProp<RootStackParamList>) =>
       prepareCreate(dispatch, navigation),
-    createDisc: (data: string, navigation: NativeStackNavigationProp<RootStackParamList>,) => createDisc(dispatch, data, navigation),
+    createDisc: (data: string, navigation: NativeStackNavigationProp<RootStackParamList>) =>
+      createDisc(dispatch, data, navigation),
     login: (token: string) => dispatch(homeActions.login(token)),
     logout: () => dispatch(homeActions.logout()),
     setConsent: () => setConsent(dispatch),
     consentLoaded: (consent: string | null) => dispatch(homeActions.consentLoaded(consent)),
-    setLanguage: (language: string) => dispatch(homeActions.setLanguage(language))
+    setLanguage: (language: string) => dispatch(homeActions.setLanguage(language)),
   }
 }
 
@@ -83,7 +86,20 @@ const TabOneScreen = (props: ReduxType) => {
     androidClientId: "368284396209-9mdl024mu9bj3mpadovsk4le6uq8g5c8.apps.googleusercontent.com",
   })
 
-  const { loadingConsent, consent, user, error, login, logout, prepareCreate, createDisc, setConsent, consentLoaded, setLanguage, navigation } = props
+  const {
+    loadingConsent,
+    consent,
+    user,
+    error,
+    login,
+    logout,
+    prepareCreate,
+    createDisc,
+    setConsent,
+    consentLoaded,
+    setLanguage,
+    navigation,
+  } = props
 
   React.useEffect(() => {
     if (response?.type === "success") {
@@ -110,8 +126,8 @@ const TabOneScreen = (props: ReduxType) => {
     })
   }
 
-  if(loadingConsent) {
-    SecureStore.getItemAsync("consent").then(consent => consentLoaded(consent))
+  if (loadingConsent) {
+    SecureStore.getItemAsync("consent").then((consent) => consentLoaded(consent))
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" />
@@ -119,7 +135,7 @@ const TabOneScreen = (props: ReduxType) => {
     )
   }
 
-  if(!consent) {
+  if (!consent) {
     return (
       <View style={styles.container}>
         <LanguageSelector setLanguage={setLanguage} />
@@ -129,7 +145,9 @@ const TabOneScreen = (props: ReduxType) => {
           <Text>{`\u2022 ${i18n.t("home.consent.row2")}`}</Text>
         </View>
         <TouchableOpacity style={styles.button} onPress={() => setConsent()}>
-          <Text darkColor="white" lightColor="white">{i18n.t("home.consent.button")}</Text>
+          <Text darkColor="white" lightColor="white">
+            {i18n.t("home.consent.button")}
+          </Text>
         </TouchableOpacity>
       </View>
     )
@@ -139,21 +157,25 @@ const TabOneScreen = (props: ReduxType) => {
     <View style={styles.container}>
       <LanguageSelector setLanguage={setLanguage} />
       <Image style={styles.logo} source={logo} />
-      {user &&
+      {user && (
         <View>
           <Text style={styles.subtitle}>{i18n.t("home.user.details")}</Text>
           <Text>{user.username}</Text>
           <Text>{`${user.firstName} ${user.lastName} #${user.pdgaNumber}`}</Text>
           <Text>{user.email}</Text>
-          {user.groups && user.groups.length > 0 &&
+          {user.groups && user.groups.length > 0 && (
             <View>
               <Text style={styles.subtitle}>{i18n.t("home.user.groups")}</Text>
-              {user.groups.map(group => <Text key={`group-${group.id}`}> {`\u2022 ${group.name}`}</Text> )}
+              {user.groups.map((group) => (
+                <Text key={`group-${group.id}`}> {`\u2022 ${group.name}`}</Text>
+              ))}
             </View>
-          }
+          )}
         </View>
-      }
-      {user && <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />}
+      )}
+      {user && (
+        <View style={styles.separator} lightColor="#eee" darkColor="rgba(255,255,255,0.1)" />
+      )}
       {user && (
         <View style={styles.row}>
           <Text style={styles.subtitle}>{i18n.t("discs.new")}</Text>
@@ -189,7 +211,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   logo: {
-    margin: 20
+    margin: 20,
   },
   row: {
     flexDirection: "row",
@@ -202,7 +224,7 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 15,
     fontWeight: "bold",
-    marginVertical: 5
+    marginVertical: 5,
   },
   button: {
     margin: 20,
@@ -226,13 +248,13 @@ const styles = StyleSheet.create({
     width: "80%",
   },
   consent: {
-    margin: 20
+    margin: 20,
   },
   flag: {
     height: 25,
     width: 35,
     borderWidth: 1,
     borderColor: "black",
-    margin: 20
-  }
+    margin: 20,
+  },
 })

@@ -1,3 +1,6 @@
+import { action } from "typesafe-actions"
+import { pick } from "ramda"
+
 import {
   CONSENT_LOADED,
   LOGIN,
@@ -11,16 +14,13 @@ import {
   UPDATE_USER,
   UPDATE_USER_FAIL,
   UPDATE_USER_SUCCESS,
-} from "./homeReducer"
-import { action } from "typesafe-actions"
+} from "../constants/actionNames"
 import { loginPayload, patchPayload } from "../Api"
 import { IResponsePayload, IUser } from "../types"
-import { pick } from "ramda"
 
 export const login = (token: string) => action(LOGIN, loginPayload(token))
 export const loginSuccess = (payload: IResponsePayload<IUser>) => action(LOGIN_SUCCESS, payload)
 export const loginFail = (payload: IResponsePayload<IUser>) => action(LOGIN_FAIL, payload)
-
 export const prepareUserUpdate = () => action(PREPARE_USER_UPDATE)
 export const updateUser = (user: IUser, token: string) =>
   action(

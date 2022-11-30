@@ -79,16 +79,14 @@ function BottomTabNavigator() {
           title: i18n.t("home.title"),
           tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
           headerRight: () => (
-              <TouchableOpacity
-                onPress={() => navigation.navigate("User")}
-              >
-                <FontAwesome
-                  name="user-circle-o"
-                  size={25}
-                  color={Colors[colorScheme].text}
-                  style={{ margin: 15 }}
-                />
-              </TouchableOpacity>
+            <TouchableOpacity onPress={() => navigation.navigate("User")}>
+              <FontAwesome
+                name="user-circle-o"
+                size={25}
+                color={Colors[colorScheme].text}
+                style={{ margin: 15 }}
+              />
+            </TouchableOpacity>
           ),
         })}
       />

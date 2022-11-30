@@ -13,7 +13,7 @@ const translations: Dict = {
         row2: "Kiekkohamsteri collects and saves pictures you submit with this application. Purpose if collection is application functionality.",
         button: "Agree",
         remove: "Remove consent",
-        noConsent: "You need to agree consent"
+        noConsent: "You need to agree consent",
       },
       user: {
         details: "User details",
@@ -24,8 +24,8 @@ const translations: Dict = {
         lastName: "Last name",
         pdgaNumber: "PDGA number",
         update: "Update",
-        notLoggedIn: "You're not logged in"
-      }
+        notLoggedIn: "You're not logged in",
+      },
     },
     discs: {
       title: "Discs",
@@ -34,7 +34,7 @@ const translations: Dict = {
         title: "Delete disc",
         subtitle: "Are you sure you want to delete this disc?",
         cancel: "Cancel",
-        confirm: "Delete"
+        confirm: "Delete",
       },
       update: {
         button: "Update",
@@ -54,9 +54,9 @@ const translations: Dict = {
         lostAndFound: "Lost and found",
         lost: "Lost",
         itb: "In the bag",
-        publicDisc: "Public disc"
-      }
-    }
+        publicDisc: "Public disc",
+      },
+    },
   },
   fi: {
     home: {
@@ -67,7 +67,7 @@ const translations: Dict = {
         row2: "Kiekkohamsteri kerää ja tallentaa sovelluksen kautta lähettämäsi valokuvat. Keräämisen tarkoituksena on tarkoituksena sovelluksen toiminnallisuus.",
         button: "Hyväksy",
         remove: "Poista suostumusten hyväksyntä",
-        noConsent: "Et ole hyväksynyt suostumusvaatimusta"
+        noConsent: "Et ole hyväksynyt suostumusvaatimusta",
       },
       user: {
         details: "Käyttäjätiedot",
@@ -78,8 +78,8 @@ const translations: Dict = {
         lastName: "Sukunimi",
         pdgaNumber: "PDGA numero",
         update: "Päivitä",
-        notLoggedIn: "Et ole kirjautunut"
-      }
+        notLoggedIn: "Et ole kirjautunut",
+      },
     },
     discs: {
       title: "Kiekot",
@@ -88,7 +88,7 @@ const translations: Dict = {
         title: "Poista kiekko",
         subtitle: "Haluatko varmasti poistaa tämän kiekon?",
         cancel: "Peruuta",
-        confirm: "Poista"
+        confirm: "Poista",
       },
       update: {
         button: "Päivitä",
@@ -108,10 +108,10 @@ const translations: Dict = {
         lostAndFound: "Löytökiekko",
         lost: "Kadonnut",
         itb: "Bägissä",
-        publicDisc: "Julkinen kiekko"
-      }
-    }
-  }
+        publicDisc: "Julkinen kiekko",
+      },
+    },
+  },
 }
 
 const supportedLanguages = ["fi", "en"]

@@ -13,7 +13,7 @@ import { View, Text } from "../components/Themed"
 import { RootStackParamList } from "../types"
 import * as discActions from "../components/discActions"
 import { IRootState } from "../store"
-import { imageFormat } from "../constants/Discs"
+import { imageFormat } from "../constants/discs"
 
 const mapStateToProps = ({ discs }: IRootState): IDiscsState => {
   return discs

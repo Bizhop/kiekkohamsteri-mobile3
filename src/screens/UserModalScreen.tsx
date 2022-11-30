@@ -26,27 +26,32 @@ const updateUser = (user: IUser, dispatch: Dispatch<HomeActions>) => {
   )
 }
 
-const unsetConsent = (dispatch: Dispatch, navigation: NativeStackNavigationProp<RootStackParamList>) => {
-  SecureStore.deleteItemAsync("consent").then(
-    () => {
-      dispatch(homeActions.unsetConsent())
-      navigation.navigate("Root")
-    })
+const unsetConsent = (
+  dispatch: Dispatch,
+  navigation: NativeStackNavigationProp<RootStackParamList>,
+) => {
+  SecureStore.deleteItemAsync("consent").then(() => {
+    dispatch(homeActions.unsetConsent())
+    navigation.navigate("Root")
+  })
 }
 
 const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
   return {
     updateUser: (user: IUser) => updateUser(user, dispatch),
-    unsetConsent: (navigation: NativeStackNavigationProp<RootStackParamList>) => unsetConsent(dispatch, navigation)
+    unsetConsent: (navigation: NativeStackNavigationProp<RootStackParamList>) =>
+      unsetConsent(dispatch, navigation),
   }
 }
 
-type ReduxType = ReturnType<typeof mapStateToProps> & ReturnType<typeof mapDispatcherToProps> & NativeStackScreenProps<RootStackParamList>
+type ReduxType = ReturnType<typeof mapStateToProps> &
+  ReturnType<typeof mapDispatcherToProps> &
+  NativeStackScreenProps<RootStackParamList>
 
 const UserModalScreen = (props: ReduxType) => {
   const { consent, user, updateUser, unsetConsent, navigation } = props
 
-  if(!user || !consent) {
+  if (!user || !consent) {
     return <AccessCheck user={user} consent={consent} />
   }
 
@@ -55,8 +60,10 @@ const UserModalScreen = (props: ReduxType) => {
       <Text style={styles.title}>{i18n.t("home.user.edit")}</Text>
       <UserEditForm initialValues={user} update={updateUser} />
       <TouchableOpacity style={styles.button} onPress={() => unsetConsent(navigation)}>
-          <Text darkColor="white" lightColor="white">{i18n.t("home.consent.remove")}</Text>
-        </TouchableOpacity>
+        <Text darkColor="white" lightColor="white">
+          {i18n.t("home.consent.remove")}
+        </Text>
+      </TouchableOpacity>
 
       {/* Use a light status bar on iOS to account for the black space above the modal */}
       <StatusBar style={Platform.OS === "ios" ? "light" : "auto"} />
@@ -80,7 +87,11 @@ const UserEditForm = (props: { initialValues: IUser; update: (user: IUser) => vo
       buttonText={i18n.t("home.user.update")}
     >
       <FormItem value={username} label={i18n.t("home.user.username")} onChangeText={setUserName} />
-      <FormItem value={firstName} label={i18n.t("home.user.firstName")} onChangeText={setFirstName} />
+      <FormItem
+        value={firstName}
+        label={i18n.t("home.user.firstName")}
+        onChangeText={setFirstName}
+      />
       <FormItem value={lastName} label={i18n.t("home.user.lastName")} onChangeText={setLastName} />
       <FormItem
         value={pdgaNumber.toString()}
@@ -102,7 +113,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    marginBottom: 20
+    marginBottom: 20,
   },
   button: {
     margin: 20,
@@ -111,5 +122,5 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     borderColor: Colors.blue.dark,
     backgroundColor: Colors.blue.normal,
-  }
+  },
 })

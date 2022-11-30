@@ -1,8 +1,6 @@
 import { IDropdownsState, DropdownActions } from "../types"
 
-export const GET = "dropdowns/GET"
-export const GET_SUCCESS = "dropdowns/GET_SUCCESS"
-export const GET_FAIL = "dropdowns/GET_FAIL"
+import { GET_DROPDOWNS, GET_DROPDOWNS_SUCCESS } from "../constants/actionNames"
 
 const initialState: IDropdownsState = {
   dropdowns: {
@@ -20,14 +18,14 @@ export default function dropdownReducer(
   state: IDropdownsState = initialState,
   action: DropdownActions,
 ): IDropdownsState {
-  action.type.startsWith("dropdowns") && console.log(action)
+  //action.type.startsWith("dropdowns") && console.log(action)
   switch (action.type) {
-    case GET:
+    case GET_DROPDOWNS:
       return {
         ...state,
         selectedManufacturerId: action.meta.manufacturerId,
       }
-    case GET_SUCCESS:
+    case GET_DROPDOWNS_SUCCESS:
       return {
         ...state,
         dropdowns: action.payload.data,

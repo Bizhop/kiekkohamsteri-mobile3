@@ -19,11 +19,11 @@ export default {
   blue: {
     light: "#4dabf5",
     normal: "#2196f3",
-    dark: "#1769aa"
+    dark: "#1769aa",
   },
   red: {
     light: "#ff4569",
     normal: "#ff1744",
-    dark: "#b2102f"
-  }
+    dark: "#b2102f",
+  },
 }

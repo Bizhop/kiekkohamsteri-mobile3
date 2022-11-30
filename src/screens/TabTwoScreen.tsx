@@ -5,7 +5,7 @@ import * as SecureStore from "expo-secure-store"
 import { ListItem, Avatar } from "@rneui/themed"
 
 import * as discActions from "../components/discActions"
-import * as DiscsConstants from "../constants/Discs"
+import * as DiscsConstants from "../constants/discs"
 import { View } from "../components/Themed"
 import { IRootState } from "../store"
 import { DiscActions, IDisc, RootStackParamList } from "../types"
@@ -31,7 +31,9 @@ const openEdit = (
 }
 
 const deleteDisc = (dispatch: Dispatch, id: number) => {
-  SecureStore.getItemAsync("token").then((token) => token && dispatch(discActions.deleteDisc(token, id)))
+  SecureStore.getItemAsync("token").then(
+    (token) => token && dispatch(discActions.deleteDisc(token, id)),
+  )
 }
 
 const mapStateToProps = (root: IRootState): IRootState => {
@@ -43,7 +45,7 @@ const mapDispatcherToProps = (dispatch: Dispatch<DiscActions>) => {
     getDiscs: getDiscs(dispatch),
     openEdit: (index: number, navigation: NativeStackNavigationProp<RootStackParamList>) =>
       openEdit(dispatch, index, navigation),
-    deleteDisc: (id: number, _navigation: any) => deleteDisc(dispatch, id)
+    deleteDisc: (id: number, _navigation: any) => deleteDisc(dispatch, id),
   }
 }
 
@@ -57,7 +59,7 @@ const TabTwoScreen = (props: ReduxType) => {
   const { navigation, openEdit, deleteDisc } = props
   const { imagesUrl, discBasics, discStats } = DiscsConstants
 
-  if(!user || !consent) {
+  if (!user || !consent) {
     return <AccessCheck user={user} consent={consent} />
   }
 
@@ -73,7 +75,14 @@ const TabTwoScreen = (props: ReduxType) => {
               <ListItem.Title>{discBasics(disc)}</ListItem.Title>
               <ListItem.Subtitle>{discStats(disc)}</ListItem.Subtitle>
             </ListItem.Content>
-            <ListItem.Chevron style={styles.deleteButton} color="white" type="font-awesome" name="trash" size={20} onPress={() => deleteDialog(disc.id, deleteDisc, i18n, navigation)} />
+            <ListItem.Chevron
+              style={styles.deleteButton}
+              color="white"
+              type="font-awesome"
+              name="trash"
+              size={20}
+              onPress={() => deleteDialog(disc.id, deleteDisc, i18n, navigation)}
+            />
           </ListItem>
         ))
       )}
