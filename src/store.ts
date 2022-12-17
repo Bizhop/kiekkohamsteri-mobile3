@@ -14,7 +14,7 @@ export interface IRootState {
 }
 
 const client = axios.create({
-  baseURL: "https://kiekkohamsteri-backend.valuemotive.net/api",
+  baseURL: "https://kiekkohamsteri-dev-backend.valuemotive.net/api",
   responseType: "json",
 })
 
