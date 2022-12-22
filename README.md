@@ -18,10 +18,10 @@ eas build -p android -e preview
 ## Android Play Store
 ### Build
 ```
-- eas build -p android
+eas build -p android
 ```
 
 ### Submit (after building)
 ```
-- eas submit -p android
+eas submit -p android
 ```
