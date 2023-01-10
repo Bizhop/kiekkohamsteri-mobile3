@@ -42,9 +42,9 @@ const mapStateToProps = (root: IRootState): IDiscsState & IDropdownsState => {
 }
 
 const getByManufacturerId = (dispatch: Dispatch, manufacturerId: number) => {
-  SecureStore.getItemAsync("token").then(
-    (token) => token && dispatch(dropdownActions.getByManufacturerId(manufacturerId, token)),
-  )
+  SecureStore.getItemAsync("token")
+    .then((token) => token && dispatch(dropdownActions.getByManufacturerId(manufacturerId, token)))
+    .catch((error) => console.log(error))
 }
 
 const updateDisc = (
@@ -53,9 +53,9 @@ const updateDisc = (
   id: number,
   navigation: NativeStackNavigationProp<RootTabParamList>,
 ) => {
-  SecureStore.getItemAsync("token").then(
-    (token) => token && dispatch(discActions.updateDisc(token, disc, id)),
-  )
+  SecureStore.getItemAsync("token")
+    .then((token) => token && dispatch(discActions.updateDisc(token, disc, id)))
+    .catch((error) => console.log(error))
   navigation.navigate("TabTwo")
 }
 
@@ -64,9 +64,9 @@ const deleteDisc = (
   id: number,
   navigation: NativeStackNavigationProp<RootTabParamList>,
 ) => {
-  SecureStore.getItemAsync("token").then(
-    (token) => token && dispatch(discActions.deleteDisc(token, id)),
-  )
+  SecureStore.getItemAsync("token")
+    .then((token) => token && dispatch(discActions.deleteDisc(token, id)))
+    .catch((error) => console.log(error))
   navigation.navigate("TabTwo")
 }
 

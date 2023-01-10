@@ -24,7 +24,9 @@ const mapStateToProps = ({ home }: IRootState): IHomeState => {
 }
 
 const autoLogin = (dispatch: Dispatch<HomeActions>) => {
-  SecureStore.getItemAsync("token").then((token) => token && dispatch(homeActions.login(token)))
+  SecureStore.getItemAsync("token")
+    .then((token) => token && dispatch(homeActions.login(token)))
+    .catch((error) => console.log(error))
 }
 
 const prepareCreate = (
@@ -40,14 +42,16 @@ const createDisc = (
   data: string,
   navigation: NativeStackNavigationProp<RootStackParamList>,
 ) => {
-  SecureStore.getItemAsync("token").then(
-    (token) => token && dispatch(discActions.createDisc(token, data)),
-  )
+  SecureStore.getItemAsync("token")
+    .then((token) => token && dispatch(discActions.createDisc(token, data)))
+    .catch((error) => console.log(error))
   navigation.navigate("Disc")
 }
 
 const setConsent = (dispatch: Dispatch) => {
-  SecureStore.setItemAsync("consent", "true").then(() => dispatch(homeActions.setConsent()))
+  SecureStore.setItemAsync("consent", "true")
+    .then(() => dispatch(homeActions.setConsent()))
+    .catch((error) => console.log(error))
 }
 
 const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
@@ -81,7 +85,7 @@ const LanguageSelector = (props: { setLanguage: (language: string) => void }) =>
 )
 
 const TabOneScreen = (props: ReduxType) => {
-  const [_request, response, promptAsync] = Google.useIdTokenAuthRequest({
+  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
     expoClientId: "368284396209-ein43uvg6fe6etku0fl464kcno7v66sp.apps.googleusercontent.com",
     androidClientId: "368284396209-9mdl024mu9bj3mpadovsk4le6uq8g5c8.apps.googleusercontent.com",
   })
@@ -114,20 +118,26 @@ const TabOneScreen = (props: ReduxType) => {
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
-    }).then((result) => {
-      if (result.assets && result.assets.length > 0) {
-        const image = result.assets[0]
-        manipulateAsync(image.uri, [{ resize: { width: 600 } }], imageFormat).then((cropped) =>
-          cropped.base64
-            ? createDisc("data:image/jpg;base64," + cropped.base64, navigation)
-            : console.log("Result has no base64 image"),
-        )
-      }
     })
+      .then((result) => {
+        if (result.assets && result.assets.length > 0) {
+          const image = result.assets[0]
+          manipulateAsync(image.uri, [{ resize: { width: 600 } }], imageFormat)
+            .then((cropped) =>
+              cropped.base64
+                ? createDisc("data:image/jpg;base64," + cropped.base64, navigation)
+                : console.log("Result has no base64 image"),
+            )
+            .catch((error) => console.log(error))
+        }
+      })
+      .catch((error) => console.log(error))
   }
 
   if (loadingConsent) {
-    SecureStore.getItemAsync("consent").then((consent) => consentLoaded(consent))
+    SecureStore.getItemAsync("consent")
+      .then((consent) => consentLoaded(consent))
+      .catch((error) => console.log(error))
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" />
