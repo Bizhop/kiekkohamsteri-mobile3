@@ -5,11 +5,11 @@ import { GET_DROPDOWNS, GET_DROPDOWNS_SUCCESS } from "../constants/actionNames"
 const initialState: IDropdownsState = {
   dropdowns: {
     molds: [],
-    valms: [],
-    muovit: [],
-    varit: [],
-    kunto: [],
-    tussit: [],
+    manufacturers: [],
+    plastics: [],
+    colors: [],
+    conditions: [],
+    markings: [],
   },
   selectedManufacturerId: null,
 }

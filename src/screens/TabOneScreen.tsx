@@ -81,7 +81,7 @@ const LanguageSelector = (props: { setLanguage: (language: string) => void }) =>
 )
 
 const TabOneScreen = (props: ReduxType) => {
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+  const [_request, response, promptAsync] = Google.useIdTokenAuthRequest({
     expoClientId: "368284396209-ein43uvg6fe6etku0fl464kcno7v66sp.apps.googleusercontent.com",
     androidClientId: "368284396209-9mdl024mu9bj3mpadovsk4le6uq8g5c8.apps.googleusercontent.com",
   })

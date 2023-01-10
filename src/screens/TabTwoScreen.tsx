@@ -70,7 +70,7 @@ const TabTwoScreen = (props: ReduxType) => {
       ) : (
         discs.map((disc: IDisc, index: number) => (
           <ListItem bottomDivider key={disc.id} onPress={() => openEdit(index, navigation)}>
-            <Avatar source={{ uri: `${imagesUrl}t_lista/${disc.kuva}` }} />
+            <Avatar source={{ uri: `${imagesUrl}t_lista/${disc.image}` }} />
             <ListItem.Content>
               <ListItem.Title>{discBasics(disc)}</ListItem.Title>
               <ListItem.Subtitle>{discStats(disc)}</ListItem.Subtitle>

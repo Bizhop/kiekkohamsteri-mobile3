@@ -24,6 +24,7 @@ import {
   IDropdownsState,
   IDropdowns,
   RootTabParamList,
+  IDiscUpdate,
 } from "../types"
 import * as DiscsConstants from "../constants/discs"
 import { assoc, omit, prop } from "ramda"
@@ -96,14 +97,17 @@ const DiscModalScreen = (props: ReduxType) => {
   const { imagesUrl, discBasics, discStats } = DiscsConstants
 
   if (discInEdit && !selectedManufacturerId) {
-    updateDropdowns(discInEdit.valmId)
+    updateDropdowns(discInEdit.mold.manufacturer.id)
   }
 
   return (
     <View style={styles.container}>
       {discInEdit ? (
         <ScrollView>
-          <Image style={styles.image} source={{ uri: `${imagesUrl}t_kiekko/${discInEdit.kuva}` }} />
+          <Image
+            style={styles.image}
+            source={{ uri: `${imagesUrl}t_kiekko/${discInEdit.image}` }}
+          />
           <Text style={styles.title}>{discBasics(discInEdit)}</Text>
           <Text>{discStats(discInEdit)}</Text>
           <DiscEditForm
@@ -132,43 +136,46 @@ const DiscEditForm = (props: {
   initialValues: IDisc
   dropdowns: IDropdowns
   updateDropdowns: (manufacturerId: number) => void
-  updateDisc: (disc: any, id: number) => void
+  updateDisc: (disc: IDiscUpdate, id: number) => void
 }) => {
   const { initialValues, dropdowns, updateDropdowns, updateDisc } = props
 
   const [state, setState] = React.useState({
-    valmId: initialValues.valmId,
-    moldId: initialValues.moldId,
-    muoviId: initialValues.muoviId,
-    variId: initialValues.variId,
-    paino: initialValues.paino.toString(),
-    kunto: initialValues.kunto,
-    hohto: initialValues.hohto,
-    spessu: initialValues.spessu,
+    manufacturerId: initialValues.mold.manufacturer.id,
+    moldId: initialValues.mold.id,
+    plasticId: initialValues.plastic.id,
+    colorId: initialValues.color.id,
+    weight: initialValues.weight,
+    condition: initialValues.condition,
+    glow: initialValues.glow,
+    special: initialValues.special,
     dyed: initialValues.dyed,
     swirly: initialValues.swirly,
-    tussit: initialValues.tussit,
-    myynnissa: initialValues.myynnissa,
-    hinta: initialValues.hinta.toString(),
-    muuta: initialValues.muuta,
-    loytokiekko: initialValues.loytokiekko,
+    markings: initialValues.markings,
+    forSale: initialValues.forSale,
+    price: initialValues.price,
+    description: initialValues.description,
+    lostAndFound: initialValues.lostAndFound,
     itb: initialValues.itb,
     publicDisc: initialValues.publicDisc,
     lost: initialValues.lost,
   })
 
+  const [textWeight, setTextWeight] = React.useState(initialValues.weight.toString())
+  const [textPrice, setTextPrice] = React.useState(initialValues.price.toString())
+
   return (
     <Form
-      onButtonPress={() => updateDisc(omit(["valmId"], state), initialValues.id)}
+      onButtonPress={() => updateDisc(omit(["manufacturerId"], state), initialValues.id)}
       buttonText={i18n.t("discs.update.button")}
       buttonStyle={styles.submitButton}
     >
       <DropdownSelector
         label="discs.update.manufacturer"
-        name="valmId"
-        items={dropdowns.valms.map((manufacturer) => ({
-          label: manufacturer.valmistaja,
-          value: manufacturer.id,
+        name="manufacturerId"
+        items={dropdowns.manufacturers.map((manufacturer) => ({
+          label: manufacturer.name,
+          value: manufacturer.value,
         }))}
         state={state}
         setState={setState}
@@ -177,63 +184,82 @@ const DiscEditForm = (props: {
       <DropdownSelector
         label="discs.update.mold"
         name="moldId"
-        items={dropdowns.molds.map((mold) => ({ label: mold.kiekko, value: mold.id }))}
+        items={dropdowns.molds.map((mold) => ({ label: mold.name, value: mold.value }))}
         state={state}
         setState={setState}
         updateDropdowns={() => {}}
       />
       <DropdownSelector
         label="discs.update.plastic"
-        name="muoviId"
-        items={dropdowns.muovit.map((plastic) => ({ label: plastic.muovi, value: plastic.id }))}
+        name="plasticId"
+        items={dropdowns.plastics.map((plastic) => ({ label: plastic.name, value: plastic.value }))}
         state={state}
         setState={setState}
         updateDropdowns={() => {}}
       />
       <DropdownSelector
         label="discs.update.color"
-        name="variId"
-        items={dropdowns.varit.map((color) => ({ label: color.vari, value: color.id }))}
+        name="colorId"
+        items={dropdowns.colors.map((color) => ({ label: color.name, value: color.value }))}
         state={state}
         setState={setState}
         updateDropdowns={() => {}}
       />
       <DropdownSelector
         label="discs.update.condition"
-        name="kunto"
-        items={dropdowns.kunto.map((condition) => ({ label: condition.nimi, value: condition.id }))}
+        name="condition"
+        items={dropdowns.conditions.map((condition) => ({
+          label: condition.name,
+          value: condition.value,
+        }))}
         state={state}
         setState={setState}
         updateDropdowns={() => {}}
       />
       <DropdownSelector
         label="discs.update.markings"
-        name="tussit"
-        items={dropdowns.tussit.map((marking) => ({ label: marking.nimi, value: marking.id }))}
+        name="markings"
+        items={dropdowns.markings.map((marking) => ({ label: marking.name, value: marking.value }))}
         state={state}
         setState={setState}
         updateDropdowns={() => {}}
       />
       <FormItem
-        value={state.paino}
-        label={i18n.t("discs.update.button")}
-        onChangeText={(text) => setState({ ...state, paino: text })}
+        value={textWeight}
+        label={i18n.t("discs.update.weight")}
+        onChangeText={setTextWeight}
         onEndEditing={(e) =>
-          updateState("paino", e.nativeEvent.text, initialValues, validateNumber, state, setState)
+          updateState(
+            "weight",
+            e.nativeEvent.text,
+            state.weight.toString(),
+            validateNumber,
+            state,
+            setState,
+            setTextWeight,
+          )
         }
       />
-      <Checkbox label="discs.update.glow" name="hohto" state={state} setState={setState} />
-      <Checkbox label="discs.update.special" name="spessu" state={state} setState={setState} />
+      <Checkbox label="discs.update.glow" name="glow" state={state} setState={setState} />
+      <Checkbox label="discs.update.special" name="special" state={state} setState={setState} />
       <Checkbox label="discs.update.dyed" name="dyed" state={state} setState={setState} />
       <Checkbox label="discs.update.swirly" name="swirly" state={state} setState={setState} />
-      <Checkbox label="discs.update.forSale" name="myynnissa" state={state} setState={setState} />
-      {state.myynnissa && (
+      <Checkbox label="discs.update.forSale" name="forSale" state={state} setState={setState} />
+      {state.forSale && (
         <FormItem
-          value={state.hinta}
+          value={textPrice}
           label={i18n.t("discs.update.price")}
-          onChangeText={(text) => setState({ ...state, hinta: text })}
+          onChangeText={setTextPrice}
           onEndEditing={(e) =>
-            updateState("hinta", e.nativeEvent.text, initialValues, validateNumber, state, setState)
+            updateState(
+              "price",
+              e.nativeEvent.text,
+              state.price.toString(),
+              validateNumber,
+              state,
+              setState,
+              setTextPrice,
+            )
           }
         />
       )}
@@ -305,17 +331,17 @@ const DropdownSelector = (props: {
 const updateState = (
   name: string,
   value: string,
-  initialValues: IDisc,
+  initialValue: string,
   validator: (value: string) => boolean,
   state: any,
   setState: React.Dispatch<React.SetStateAction<any>>,
+  setTextFunction: React.Dispatch<React.SetStateAction<string>>,
 ) => {
   if (validator(value)) {
     setState(assoc(name, value, state))
+    setTextFunction(parseInt(value).toString())
   } else {
-    alert(`Input ${name} is not valid, resetting...`)
-    const initialValue = prop(name, initialValues) || 0
-    setState(assoc(name, initialValue.toString(), state))
+    setTextFunction(initialValue)
   }
 }
 

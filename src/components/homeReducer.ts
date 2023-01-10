@@ -30,7 +30,7 @@ export default function homeReducer(
   state: IHomeState = initialState,
   action: HomeActions,
 ): IHomeState {
-  //action.type.startsWith("home") && console.log(action)
+  action.type.startsWith("home") && console.log(action)
   switch (action.type) {
     case LOGIN:
       return {
