@@ -1,4 +1,4 @@
-import { findIndex, prop, propEq, reject, update } from "ramda"
+import { append, findIndex, prop, propEq, reject, update } from "ramda"
 import {
   CREATE_DISC_SUCCESS,
   DELETE_DISC_SUCCESS,
@@ -68,9 +68,11 @@ export default function discsReducer(
         discInEdit: null,
       }
     case CREATE_DISC_SUCCESS:
+      const newDisc = action.payload.data
       return {
         ...state,
-        discInEdit: action.payload.data,
+        discs: append(newDisc, state.discs),
+        discInEdit: newDisc,
       }
     case PREPARE_CREATE_DISC:
       return {

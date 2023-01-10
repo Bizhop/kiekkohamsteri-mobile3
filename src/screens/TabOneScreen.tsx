@@ -24,7 +24,9 @@ const mapStateToProps = ({ home }: IRootState): IHomeState => {
 }
 
 const autoLogin = (dispatch: Dispatch<HomeActions>) => {
-  SecureStore.getItemAsync("token").then((token) => token && dispatch(homeActions.login(token)))
+  SecureStore.getItemAsync("token")
+    .then((token) => token && dispatch(homeActions.login(token)))
+    .catch((error) => console.log(error))
 }
 
 const prepareCreate = (
@@ -40,14 +42,16 @@ const createDisc = (
   data: string,
   navigation: NativeStackNavigationProp<RootStackParamList>,
 ) => {
-  SecureStore.getItemAsync("token").then(
-    (token) => token && dispatch(discActions.createDisc(token, data)),
-  )
+  SecureStore.getItemAsync("token")
+    .then((token) => token && dispatch(discActions.createDisc(token, data)))
+    .catch((error) => console.log(error))
   navigation.navigate("Disc")
 }
 
 const setConsent = (dispatch: Dispatch) => {
-  SecureStore.setItemAsync("consent", "true").then(() => dispatch(homeActions.setConsent()))
+  SecureStore.setItemAsync("consent", "true")
+    .then(() => dispatch(homeActions.setConsent()))
+    .catch((error) => console.log(error))
 }
 
 const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
@@ -114,20 +118,29 @@ const TabOneScreen = (props: ReduxType) => {
       allowsEditing: true,
       aspect: [1, 1],
       quality: 1,
-    }).then((result) => {
-      if (result.assets && result.assets.length > 0) {
-        const image = result.assets[0]
-        manipulateAsync(image.uri, [{ resize: { width: 600 } }], imageFormat).then((cropped) =>
-          cropped.base64
-            ? createDisc("data:image/jpg;base64," + cropped.base64, navigation)
-            : console.log("Result has no base64 image"),
-        )
-      }
     })
+      .then((result) => {
+        if (result.assets && result.assets.length > 0) {
+          const image = result.assets[0]
+          manipulateAsync(image.uri, [{ resize: { width: 600 } }], imageFormat)
+            .then((cropped) =>
+              cropped.base64
+                ? createDisc("data:image/jpg;base64," + cropped.base64, navigation)
+                : console.log("Result has no base64 image"),
+            )
+            .catch((error) => console.log(error))
+        }
+      })
+      .catch((error) => console.log(error))
   }
 
   if (loadingConsent) {
-    SecureStore.getItemAsync("consent").then((consent) => consentLoaded(consent))
+    SecureStore.getItemAsync("consent")
+      .then((consent) => consentLoaded(consent))
+      .catch((error) => {
+        console.log(error)
+        consentLoaded(null)
+      })
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" />

@@ -18,7 +18,9 @@ import { i18n } from "../translations"
 
 const getDiscs = (dispatch: Dispatch) => {
   dispatch(discActions.prepareGet())
-  SecureStore.getItemAsync("token").then((token) => token && dispatch(discActions.get(token)))
+  SecureStore.getItemAsync("token")
+    .then((token) => token && dispatch(discActions.get(token)))
+    .catch((error) => console.log(error))
 }
 
 const openEdit = (
@@ -31,9 +33,9 @@ const openEdit = (
 }
 
 const deleteDisc = (dispatch: Dispatch, id: number) => {
-  SecureStore.getItemAsync("token").then(
-    (token) => token && dispatch(discActions.deleteDisc(token, id)),
-  )
+  SecureStore.getItemAsync("token")
+    .then((token) => token && dispatch(discActions.deleteDisc(token, id)))
+    .catch((error) => console.log(error))
 }
 
 const mapStateToProps = (root: IRootState): IRootState => {
@@ -70,7 +72,7 @@ const TabTwoScreen = (props: ReduxType) => {
       ) : (
         discs.map((disc: IDisc, index: number) => (
           <ListItem bottomDivider key={disc.id} onPress={() => openEdit(index, navigation)}>
-            <Avatar source={{ uri: `${imagesUrl}t_lista/${disc.kuva}` }} />
+            <Avatar source={{ uri: `${imagesUrl}t_lista/${disc.image}` }} />
             <ListItem.Content>
               <ListItem.Title>{discBasics(disc)}</ListItem.Title>
               <ListItem.Subtitle>{discStats(disc)}</ListItem.Subtitle>

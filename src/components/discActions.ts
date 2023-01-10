@@ -23,24 +23,24 @@ import { IDisc, IResponsePagedPayload, IResponsePayload } from "../types"
 
 export const prepareGet = () => action(PREPARE_GET_DISC)
 export const prepareEdit = (index: number) => action(PREPARE_EDIT_DISC, { index })
-export const get = (token: string) => action(GET_DISCS, getPayload("/kiekot", token))
+export const get = (token: string) => action(GET_DISCS, getPayload("/v2/discs", token))
 export const getSuccess = (payload: IResponsePagedPayload<IDisc>) =>
   action(GET_DISCS_SUCCESS, payload)
 export const getFail = (payload: IResponsePagedPayload<IDisc>) => action(GET_DISCS_FAIL, payload)
 export const updateDisc = (token: string, disc: any, id: number) =>
-  action(UPDATE_DISC, putPayload(`/kiekot/${id}`, disc, token))
+  action(UPDATE_DISC, putPayload(`/v2/discs/${id}`, disc, token))
 export const updateDiscSuccess = (payload: IResponsePayload<IDisc>) =>
   action(UPDATE_DISC_SUCCESS, payload)
 export const updateDiscFail = (payload: IResponsePayload<IDisc>) =>
   action(UPDATE_DISC_FAIL, payload)
 export const prepareCreate = () => action(PREPARE_CREATE_DISC)
 export const createDisc = (token: string, data: string) =>
-  action(CREATE_DISC, postPayload("/kiekot", { data }, token))
+  action(CREATE_DISC, postPayload("/v2/discs", { data }, token))
 export const createDiscSuccess = (payload: IResponsePayload<IDisc>) =>
   action(CREATE_DISC_SUCCESS, payload)
 export const createDiscFail = (payload: IResponsePayload<IDisc>) =>
   action(CREATE_DISC_FAIL, payload)
 export const deleteDisc = (token: string, id: number) =>
-  action(DELETE_DISC, deletePayload(`/kiekot/${id}`, token), { id })
+  action(DELETE_DISC, deletePayload(`/v2/discs/${id}`, token), { id })
 export const deleteSuccess = (payload: any, meta: any) => action(DELETE_DISC_SUCCESS, payload, meta)
 export const deleteFail = (payload: any, meta: any) => action(DELETE_DISC_FAIL, payload, meta)

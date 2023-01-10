@@ -20,9 +20,9 @@ const mapStateToProps = ({ discs }: IRootState): IDiscsState => {
 }
 
 const createDisc = (dispatch: Dispatch, data: string) => {
-  SecureStore.getItemAsync("token").then(
-    (token) => token && dispatch(discActions.createDisc(token, data)),
-  )
+  SecureStore.getItemAsync("token")
+    .then((token) => token && dispatch(discActions.createDisc(token, data)))
+    .catch((error) => console.log(error))
 }
 
 const mapDispatcherToProps = (dispatch: Dispatch<DiscActions>) => {

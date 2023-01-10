@@ -6,7 +6,6 @@ import { ActionType } from "typesafe-actions"
 import * as homeActions from "./components/homeActions"
 import * as discActions from "./components/discActions"
 import * as dropdownActions from "./components/dropdownActions"
-import { ReactText } from "react"
 
 declare global {
   namespace ReactNavigation {
@@ -104,35 +103,53 @@ export interface IUser {
   jwt?: string
   roles?: Array<IRole>
   groups?: Array<IGroup>
+  error?: string
+}
+
+export interface IManufacturer {
+  id: number
+  name: string
+}
+
+export interface IMold {
+  id: number
+  manufacturer: IManufacturer
+  name: string
+  speed: number
+  glide: number
+  stability: number
+  fade: number
+}
+
+export interface IPlastic {
+  id: number
+  manufacturer: IManufacturer
+  name: string
+}
+
+export interface IColor {
+  id: number
+  name: string
 }
 
 export interface IDisc {
   id: number
-  omistaja: string
-  valmistaja: string
-  valmId: number
-  mold: string
-  moldId: number
-  muovi: string
-  muoviId: number
-  vari: string
-  variId: number
-  nopeus: number
-  liito: number
-  vakaus: number
-  feidi: number
-  kuva: string
-  paino: number
-  kunto: number
-  hohto: boolean
-  spessu: boolean
+  owner: IUser
+  mold: IMold
+  plastic: IPlastic
+  color: IColor
+  image: string
+  weight: number
+  condition: number
+  glow: boolean
+  special: boolean
   dyed: boolean
   swirly: boolean
-  tussit: number
-  myynnissa: boolean
-  hinta: number
-  muuta: string
-  loytokiekko: boolean
+  markings: number
+  forSale: boolean
+  price: number
+  description: string
+  lostAndFound: boolean
   itb: boolean
   publicDisc: boolean
   lost: boolean
@@ -140,18 +157,38 @@ export interface IDisc {
   updatedAt: string
 }
 
+export interface IDiscUpdate {
+  moldId: number
+  plasticId: number
+  colorId: number
+  weight: number
+  condition: number
+  glow: boolean
+  special: boolean
+  dyed: boolean
+  swirly: boolean
+  markings: number
+  forSale: boolean
+  price: number
+  description: string
+  lostAndFound: boolean
+  itb: boolean
+  publicDisc: boolean
+  lost: boolean
+}
+
 interface DefaultDropdown {
-  id: number
-  nimi: string
+  value: number
+  name: string
 }
 
 export interface IDropdowns {
-  molds: Array<{ id: number; kiekko: string }>
-  valms: Array<{ id: number; valmistaja: string }>
-  muovit: Array<{ id: number; muovi: string }>
-  varit: Array<{ id: number; vari: string }>
-  kunto: Array<DefaultDropdown>
-  tussit: Array<DefaultDropdown>
+  manufacturers: Array<DefaultDropdown>
+  molds: Array<DefaultDropdown>
+  plastics: Array<DefaultDropdown>
+  colors: Array<DefaultDropdown>
+  conditions: Array<DefaultDropdown>
+  markings: Array<DefaultDropdown>
 }
 
 export interface Item {

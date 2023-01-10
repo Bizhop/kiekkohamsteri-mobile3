@@ -21,19 +21,21 @@ const mapStateToProps = ({ home }: IRootState): IHomeState => {
 
 const updateUser = (user: IUser, dispatch: Dispatch<HomeActions>) => {
   dispatch(homeActions.prepareUserUpdate())
-  SecureStore.getItemAsync("token").then(
-    (token) => token && dispatch(homeActions.updateUser(user, token)),
-  )
+  SecureStore.getItemAsync("token")
+    .then((token) => token && dispatch(homeActions.updateUser(user, token)))
+    .catch((error) => console.log(error))
 }
 
 const unsetConsent = (
   dispatch: Dispatch,
   navigation: NativeStackNavigationProp<RootStackParamList>,
 ) => {
-  SecureStore.deleteItemAsync("consent").then(() => {
-    dispatch(homeActions.unsetConsent())
-    navigation.navigate("Root")
-  })
+  SecureStore.deleteItemAsync("consent")
+    .then(() => {
+      dispatch(homeActions.unsetConsent())
+      navigation.navigate("Root")
+    })
+    .catch((error) => console.log(error))
 }
 
 const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
