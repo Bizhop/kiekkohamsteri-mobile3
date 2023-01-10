@@ -137,7 +137,10 @@ const TabOneScreen = (props: ReduxType) => {
   if (loadingConsent) {
     SecureStore.getItemAsync("consent")
       .then((consent) => consentLoaded(consent))
-      .catch((error) => console.log(error))
+      .catch((error) => {
+        console.log(error)
+        consentLoaded(null)
+      })
     return (
       <View style={styles.container}>
         <ActivityIndicator size="large" />
