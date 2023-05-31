@@ -49,7 +49,8 @@ export interface IDiscsState {
   discs: Array<IDisc>
   loading: boolean
   discInEdit: IDisc | null
-  error: string | null
+  error: string | null,
+  lastPage: boolean
 }
 
 export interface IDropdownsState {
@@ -78,8 +79,9 @@ export interface IResponsePayload<T> {
 
 export interface IResponsePagedPayload<T> {
   data: {
-    content: Array<T>
-  }
+    content: Array<T>,
+    last: boolean
+  },
 }
 
 interface IRole {
@@ -133,7 +135,7 @@ export interface IColor {
 }
 
 export interface IDisc {
-  id: number
+  uuid: string
   owner: IUser
   mold: IMold
   plastic: IPlastic
@@ -194,4 +196,14 @@ export interface IDropdowns {
 export interface Item {
   label: string
   value: number
+}
+
+export interface ISort {
+  sort: string,
+  column: string
+}
+
+export interface IPagination {
+  number: number,
+  size: number,
 }

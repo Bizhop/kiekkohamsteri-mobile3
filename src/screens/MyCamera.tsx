@@ -6,7 +6,7 @@ import { Dispatch } from "redux"
 import * as SecureStore from "expo-secure-store"
 import { FontAwesome } from "@expo/vector-icons"
 import { connect } from "react-redux"
-import { manipulateAsync, SaveFormat } from "expo-image-manipulator"
+import { manipulateAsync } from "expo-image-manipulator"
 
 import { DiscActions, IDiscsState } from "../types"
 import { View, Text } from "../components/Themed"
@@ -19,15 +19,15 @@ const mapStateToProps = ({ discs }: IRootState): IDiscsState => {
   return discs
 }
 
-const createDisc = (dispatch: Dispatch, data: string) => {
+const updateImage = (dispatch: Dispatch, data: string, uuid: string) => {
   SecureStore.getItemAsync("token")
-    .then((token) => token && dispatch(discActions.createDisc(token, data)))
+    .then((token) => token && dispatch(discActions.updateImage(token, data, uuid)))
     .catch((error) => console.log(error))
 }
 
 const mapDispatcherToProps = (dispatch: Dispatch<DiscActions>) => {
   return {
-    createDisc: (data: string) => createDisc(dispatch, data),
+    updateImage: (data: string, uuid: string) => updateImage(dispatch, data, uuid),
   }
 }
 
@@ -36,7 +36,7 @@ type ReduxType = ReturnType<typeof mapStateToProps> &
   NativeStackScreenProps<RootStackParamList>
 
 const MyCamera = (props: ReduxType) => {
-  const { createDisc, discInEdit, navigation } = props
+  const { updateImage, discInEdit, navigation } = props
 
   const { width } = useWindowDimensions()
   const height = Math.round((width * 4) / 3)
@@ -44,10 +44,6 @@ const MyCamera = (props: ReduxType) => {
   const [permission, requestPermission] = Camera.useCameraPermissions()
 
   let camera: Camera | null
-
-  if (discInEdit) {
-    navigation.navigate("Disc")
-  }
 
   if (!permission) {
     // Camera permissions are still loading
@@ -75,11 +71,19 @@ const MyCamera = (props: ReduxType) => {
       [{ resize: { width: 600 } }, { crop: { originX: 0, originY: 100, width: 600, height: 600 } }],
       imageFormat,
     )
-      .then((cropped) =>
-        cropped.base64
-          ? createDisc("data:image/jpg;base64," + cropped.base64)
-          : console.log("Result has no base64 image"),
-      )
+      .then((cropped) => {
+        if (!cropped.base64) {
+          console.log("Result has no base64 image")
+          return
+        }
+        if (!discInEdit) {
+          console.log("No disc in edit")
+          return
+        }
+
+        updateImage("data:image/jpg;base64," + cropped.base64, discInEdit.uuid)
+        navigation.navigate("Disc")
+      })
       .catch((error) => console.log(error))
   }
 

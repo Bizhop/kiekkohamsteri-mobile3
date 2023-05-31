@@ -11,6 +11,8 @@ import { connect } from "react-redux"
 import { Dispatch } from "redux"
 import { Form, FormItem, Picker } from "react-native-form-component"
 import * as SecureStore from "expo-secure-store"
+import * as ImagePicker from "expo-image-picker"
+import { manipulateAsync } from "expo-image-manipulator"
 
 import * as dropdownActions from "../components/dropdownActions"
 import * as discActions from "../components/discActions"
@@ -29,10 +31,12 @@ import {
 import * as DiscsConstants from "../constants/discs"
 import { assoc, omit, prop } from "ramda"
 import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack"
-import { FontAwesome } from "@expo/vector-icons"
+import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons"
 import Colors from "../constants/Colors"
 import { i18n } from "../translations"
 import deleteDialog from "./deleteDialog"
+import { RootStackParamList } from "../types"
+import { imageFormat } from "../constants/discs"
 
 const mapStateToProps = (root: IRootState): IDiscsState & IDropdownsState => {
   return {
@@ -50,39 +54,47 @@ const getByManufacturerId = (dispatch: Dispatch, manufacturerId: number) => {
 const updateDisc = (
   dispatch: Dispatch,
   disc: any,
-  id: number,
+  uuid: string,
   navigation: NativeStackNavigationProp<RootTabParamList>,
 ) => {
   SecureStore.getItemAsync("token")
-    .then((token) => token && dispatch(discActions.updateDisc(token, disc, id)))
+    .then((token) => token && dispatch(discActions.updateDisc(token, disc, uuid)))
     .catch((error) => console.log(error))
   navigation.navigate("TabTwo")
 }
 
 const deleteDisc = (
   dispatch: Dispatch,
-  id: number,
+  uuid: string,
   navigation: NativeStackNavigationProp<RootTabParamList>,
 ) => {
   SecureStore.getItemAsync("token")
-    .then((token) => token && dispatch(discActions.deleteDisc(token, id)))
+    .then((token) => token && dispatch(discActions.deleteDisc(token, uuid)))
     .catch((error) => console.log(error))
   navigation.navigate("TabTwo")
+}
+
+const updateImage = (dispatch: Dispatch, data: string, uuid: string) => {
+  SecureStore.getItemAsync("token")
+    .then((token) => token && dispatch(discActions.updateImage(token, data, uuid)))
+    .catch((error) => console.log(error))
 }
 
 const mapDispatcherToProps = (dispatch: Dispatch<DiscActions & DropdownActions>) => {
   return {
     updateDropdowns: (manufacturerId: number) => getByManufacturerId(dispatch, manufacturerId),
-    updateDisc: (disc: any, id: number, navigation: NativeStackNavigationProp<RootTabParamList>) =>
-      updateDisc(dispatch, disc, id, navigation),
-    deleteDisc: (id: number, navigation: NativeStackNavigationProp<RootTabParamList>) =>
-      deleteDisc(dispatch, id, navigation),
+    updateDisc: (disc: any, uuid: string, navigation: NativeStackNavigationProp<RootTabParamList>) =>
+      updateDisc(dispatch, disc, uuid, navigation),
+    deleteDisc: (uuid: string, navigation: NativeStackNavigationProp<RootTabParamList>) =>
+      deleteDisc(dispatch, uuid, navigation),
+    updateImage: (data: string, uuid: string) => updateImage(dispatch, data, uuid)
   }
 }
 
 type ReduxType = ReturnType<typeof mapStateToProps> &
   ReturnType<typeof mapDispatcherToProps> &
-  NativeStackScreenProps<RootTabParamList>
+  NativeStackScreenProps<RootTabParamList> &
+  NativeStackScreenProps<RootStackParamList>
 
 const DiscModalScreen = (props: ReduxType) => {
   const {
@@ -93,11 +105,42 @@ const DiscModalScreen = (props: ReduxType) => {
     navigation,
     updateDisc,
     deleteDisc,
+    updateImage
   } = props
   const { imagesUrl, discBasics, discStats } = DiscsConstants
 
   if (discInEdit && !selectedManufacturerId) {
     updateDropdowns(discInEdit.mold.manufacturer.id)
+  }
+
+  const pickImage = () => {
+    ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ImagePicker.MediaTypeOptions.Images,
+      allowsEditing: true,
+      aspect: [1, 1],
+      quality: 1,
+    })
+      .then((result) => {
+        if (result.assets && result.assets.length > 0) {
+          const image = result.assets[0]
+          manipulateAsync(image.uri, [{ resize: { width: 600 } }], imageFormat)
+            .then((cropped) => {
+              if (!cropped.base64) {
+                console.log("Result has no base64 image")
+                return
+              }
+              if (!discInEdit) {
+                console.log("No disc in edit")
+                return
+              }
+
+              updateImage("data:image/jpg;base64," + cropped.base64, discInEdit.uuid)
+              navigation.navigate("Disc")
+            })
+            .catch((error) => console.log(error))
+        }
+      })
+      .catch((error) => console.log(error))
   }
 
   return (
@@ -108,18 +151,29 @@ const DiscModalScreen = (props: ReduxType) => {
             style={styles.image}
             source={{ uri: `${imagesUrl}t_kiekko/${discInEdit.image}` }}
           />
+          <View style={styles.row}>
+            <TouchableOpacity
+              style={styles.cameraButton}
+              onPress={() => navigation.navigate("Camera")}
+            >
+              <FontAwesome name="camera" color="white" size={20} />
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.cameraButton} onPress={() => pickImage()}>
+              <MaterialCommunityIcons name="view-gallery" color="white" size={20} />
+            </TouchableOpacity>
+          </View>
           <Text style={styles.title}>{discBasics(discInEdit)}</Text>
           <Text>{discStats(discInEdit)}</Text>
           <DiscEditForm
             initialValues={discInEdit}
             dropdowns={dropdowns}
             updateDropdowns={updateDropdowns}
-            updateDisc={(disc: any, id: number) => updateDisc(disc, id, navigation)}
+            updateDisc={(disc: any, uuid: string) => updateDisc(disc, uuid, navigation)}
           />
           <View style={styles.row}>
             <TouchableOpacity
               style={styles.deleteButton}
-              onPress={() => deleteDialog(discInEdit.id, deleteDisc, i18n, navigation)}
+              onPress={() => deleteDialog(discInEdit.uuid, deleteDisc, i18n, navigation)}
             >
               <FontAwesome name="trash" color="white" size={20} />
             </TouchableOpacity>
@@ -136,7 +190,7 @@ const DiscEditForm = (props: {
   initialValues: IDisc
   dropdowns: IDropdowns
   updateDropdowns: (manufacturerId: number) => void
-  updateDisc: (disc: IDiscUpdate, id: number) => void
+  updateDisc: (disc: IDiscUpdate, uuid: string) => void
 }) => {
   const { initialValues, dropdowns, updateDropdowns, updateDisc } = props
 
@@ -166,7 +220,7 @@ const DiscEditForm = (props: {
 
   return (
     <Form
-      onButtonPress={() => updateDisc(omit(["manufacturerId"], state), initialValues.id)}
+      onButtonPress={() => updateDisc(omit(["manufacturerId"], state), initialValues.uuid)}
       buttonText={i18n.t("discs.update.button")}
       buttonStyle={styles.submitButton}
     >
@@ -187,7 +241,7 @@ const DiscEditForm = (props: {
         items={dropdowns.molds.map((mold) => ({ label: mold.name, value: mold.value }))}
         state={state}
         setState={setState}
-        updateDropdowns={() => {}}
+        updateDropdowns={() => { }}
       />
       <DropdownSelector
         label="discs.update.plastic"
@@ -195,7 +249,7 @@ const DiscEditForm = (props: {
         items={dropdowns.plastics.map((plastic) => ({ label: plastic.name, value: plastic.value }))}
         state={state}
         setState={setState}
-        updateDropdowns={() => {}}
+        updateDropdowns={() => { }}
       />
       <DropdownSelector
         label="discs.update.color"
@@ -203,7 +257,7 @@ const DiscEditForm = (props: {
         items={dropdowns.colors.map((color) => ({ label: color.name, value: color.value }))}
         state={state}
         setState={setState}
-        updateDropdowns={() => {}}
+        updateDropdowns={() => { }}
       />
       <DropdownSelector
         label="discs.update.condition"
@@ -214,7 +268,7 @@ const DiscEditForm = (props: {
         }))}
         state={state}
         setState={setState}
-        updateDropdowns={() => {}}
+        updateDropdowns={() => { }}
       />
       <DropdownSelector
         label="discs.update.markings"
@@ -222,7 +276,7 @@ const DiscEditForm = (props: {
         items={dropdowns.markings.map((marking) => ({ label: marking.name, value: marking.value }))}
         state={state}
         setState={setState}
-        updateDropdowns={() => {}}
+        updateDropdowns={() => { }}
       />
       <FormItem
         value={textWeight}
@@ -389,6 +443,14 @@ const styles = StyleSheet.create({
     borderRadius: 15,
     borderColor: Colors.red.dark,
     backgroundColor: Colors.red.normal,
+  },
+  cameraButton: {
+    margin: 20,
+    padding: 10,
+    borderWidth: 2,
+    borderRadius: 15,
+    borderColor: Colors.blue.dark,
+    backgroundColor: Colors.blue.normal,
   },
   row: {
     flexDirection: "row",

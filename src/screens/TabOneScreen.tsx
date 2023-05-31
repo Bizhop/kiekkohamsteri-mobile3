@@ -6,15 +6,13 @@ import { Dispatch } from "redux"
 import * as SecureStore from "expo-secure-store"
 import { NativeStackNavigationProp, NativeStackScreenProps } from "@react-navigation/native-stack"
 import { FontAwesome, MaterialCommunityIcons } from "@expo/vector-icons"
-import * as ImagePicker from "expo-image-picker"
-import { manipulateAsync } from "expo-image-manipulator"
 
 import { Text, View } from "../components/Themed"
 import { IRootState } from "../store"
-import { DiscActions, HomeActions, IHomeState, RootStackParamList } from "../types"
+import { HomeActions, IHomeState, RootStackParamList } from "../types"
 import * as homeActions from "../components/homeActions"
 import * as discActions from "../components/discActions"
-import { imageFormat } from "../constants/discs"
+// import { imageFormat } from "../constants/discs"
 import Colors from "../constants/Colors"
 import { en, fi, logo } from "../assets/images"
 import { i18n } from "../translations"
@@ -29,21 +27,12 @@ const autoLogin = (dispatch: Dispatch<HomeActions>) => {
     .catch((error) => console.log(error))
 }
 
-const prepareCreate = (
-  dispatch: Dispatch<DiscActions>,
-  navigation: NativeStackNavigationProp<RootStackParamList>,
-) => {
-  dispatch(discActions.prepareCreate())
-  navigation.navigate("Camera")
-}
-
 const createDisc = (
   dispatch: Dispatch,
-  data: string,
   navigation: NativeStackNavigationProp<RootStackParamList>,
 ) => {
   SecureStore.getItemAsync("token")
-    .then((token) => token && dispatch(discActions.createDisc(token, data)))
+    .then((token) => token && dispatch(discActions.createDisc(token)))
     .catch((error) => console.log(error))
   navigation.navigate("Disc")
 }
@@ -57,10 +46,8 @@ const setConsent = (dispatch: Dispatch) => {
 const mapDispatcherToProps = (dispatch: Dispatch<HomeActions>) => {
   return {
     autoLogin: autoLogin(dispatch),
-    prepareCreate: (navigation: NativeStackNavigationProp<RootStackParamList>) =>
-      prepareCreate(dispatch, navigation),
-    createDisc: (data: string, navigation: NativeStackNavigationProp<RootStackParamList>) =>
-      createDisc(dispatch, data, navigation),
+    createDisc: (navigation: NativeStackNavigationProp<RootStackParamList>) =>
+      createDisc(dispatch, navigation),
     login: (token: string) => dispatch(homeActions.login(token)),
     logout: () => dispatch(homeActions.logout()),
     setConsent: () => setConsent(dispatch),
@@ -85,7 +72,7 @@ const LanguageSelector = (props: { setLanguage: (language: string) => void }) =>
 )
 
 const TabOneScreen = (props: ReduxType) => {
-  const [request, response, promptAsync] = Google.useIdTokenAuthRequest({
+  const [_request, response, promptAsync] = Google.useIdTokenAuthRequest({
     expoClientId: "368284396209-ein43uvg6fe6etku0fl464kcno7v66sp.apps.googleusercontent.com",
     androidClientId: "368284396209-9mdl024mu9bj3mpadovsk4le6uq8g5c8.apps.googleusercontent.com",
   })
@@ -97,7 +84,6 @@ const TabOneScreen = (props: ReduxType) => {
     error,
     login,
     logout,
-    prepareCreate,
     createDisc,
     setConsent,
     consentLoaded,
@@ -112,27 +98,27 @@ const TabOneScreen = (props: ReduxType) => {
     }
   }, [response])
 
-  const pickImage = () => {
-    ImagePicker.launchImageLibraryAsync({
-      mediaTypes: ImagePicker.MediaTypeOptions.Images,
-      allowsEditing: true,
-      aspect: [1, 1],
-      quality: 1,
-    })
-      .then((result) => {
-        if (result.assets && result.assets.length > 0) {
-          const image = result.assets[0]
-          manipulateAsync(image.uri, [{ resize: { width: 600 } }], imageFormat)
-            .then((cropped) =>
-              cropped.base64
-                ? createDisc("data:image/jpg;base64," + cropped.base64, navigation)
-                : console.log("Result has no base64 image"),
-            )
-            .catch((error) => console.log(error))
-        }
-      })
-      .catch((error) => console.log(error))
-  }
+  // const pickImage = () => {
+  //   ImagePicker.launchImageLibraryAsync({
+  //     mediaTypes: ImagePicker.MediaTypeOptions.Images,
+  //     allowsEditing: true,
+  //     aspect: [1, 1],
+  //     quality: 1,
+  //   })
+  //     .then((result) => {
+  //       if (result.assets && result.assets.length > 0) {
+  //         const image = result.assets[0]
+  //         manipulateAsync(image.uri, [{ resize: { width: 600 } }], imageFormat)
+  //           .then((cropped) =>
+  //             cropped.base64
+  //               ? createDisc("data:image/jpg;base64," + cropped.base64, navigation)
+  //               : console.log("Result has no base64 image"),
+  //           )
+  //           .catch((error) => console.log(error))
+  //       }
+  //     })
+  //     .catch((error) => console.log(error))
+  // }
 
   if (loadingConsent) {
     SecureStore.getItemAsync("consent")
@@ -192,11 +178,8 @@ const TabOneScreen = (props: ReduxType) => {
       {user && (
         <View style={styles.row}>
           <Text style={styles.subtitle}>{i18n.t("discs.new")}</Text>
-          <TouchableOpacity style={styles.button} onPress={() => prepareCreate(navigation)}>
-            <FontAwesome name="camera" color="white" size={25} />
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.button} onPress={() => pickImage()}>
-            <MaterialCommunityIcons name="view-gallery" color="white" size={25} />
+          <TouchableOpacity style={styles.button} onPress={() => createDisc(navigation)}>
+            <FontAwesome name="plus" color="white" size={25} />
           </TouchableOpacity>
         </View>
       )}

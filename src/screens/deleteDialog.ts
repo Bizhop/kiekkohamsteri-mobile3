@@ -2,8 +2,8 @@ import { I18n } from "i18n-js/typings"
 import { Alert } from "react-native"
 
 const deleteDialog = (
-  id: number,
-  deleteDisc: (id: number, navigation: any) => void,
+  uuid: string,
+  deleteDisc: (uuid: string, navigation: any) => void,
   i18n: I18n,
   navigation: any,
 ) => {
@@ -14,7 +14,7 @@ const deleteDialog = (
     },
     {
       text: i18n.t("discs.delete.confirm"),
-      onPress: () => deleteDisc(id, navigation),
+      onPress: () => deleteDisc(uuid, navigation),
     },
   ])
 }
